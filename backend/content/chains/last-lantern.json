@@ -1,0 +1,490 @@
+{
+  "id": "last-lantern",
+  "title": "The Last Lantern",
+  "start_room_id": "waking-chamber",
+  "rooms": [
+    {
+      "id": "waking-chamber",
+      "title": "Waking Chamber",
+      "summary": "A low stone room where the goat wakes beside a dead lantern and a sealing threshold.",
+      "goat_context": "You remember cold stone, a dull bell far away, and the need to choose what the Echo should keep.",
+      "hotspots": [
+        {
+          "id": "locket",
+          "label": "Split Locket",
+          "kind": "relic",
+          "position": [-1.8, 0.2, -1.2],
+          "inspection": {
+            "prompt": "The locket opens on a hinge worn smooth by a thumb.",
+            "observation": "Inside is a painted goat, a child named Nara, and soot in the shape of a lantern flame.",
+            "candidates": [
+              {
+                "id": "mem_nara_unknown",
+                "title": "Nara is tied to the goat",
+                "text": "The locket links the goat to a child named Nara, but the exact identity is still incomplete.",
+                "status": "incomplete",
+                "category": "identity",
+                "confidence": 0.72,
+                "nodes": [
+                  {"id": "n_nara", "label": "Nara", "type": "person", "status": "incomplete", "metadata": {"source_object": "locket"}},
+                  {"id": "n_locket", "label": "Split locket", "type": "object", "status": "correct", "metadata": {"room": "waking-chamber"}}
+                ],
+                "edges": [
+                  {"id": "e_locket_names_nara", "source": "n_locket", "target": "n_nara", "label": "names", "status": "incomplete", "metadata": {"confidence": 0.72}}
+                ],
+                "metadata": {"source_object": "locket", "room": "waking-chamber", "trust": "worn keepsake"}
+              },
+              {
+                "id": "mem_goat_owned_locket",
+                "title": "The locket belongs to the goat",
+                "text": "The locket seems to belong to the goat, though that may be only a partial truth.",
+                "status": "misleading",
+                "category": "identity",
+                "confidence": 0.44,
+                "nodes": [
+                  {"id": "n_goat", "label": "Forgetful goat", "type": "person", "status": "misleading", "metadata": {"source_object": "locket"}}
+                ],
+                "edges": [
+                  {"id": "e_goat_claims_locket", "source": "n_goat", "target": "n_locket", "label": "claims", "status": "misleading", "metadata": {"confidence": 0.44}}
+                ],
+                "metadata": {"source_object": "locket", "room": "waking-chamber", "trust": "assumption"}
+              }
+            ]
+          }
+        },
+        {
+          "id": "dead_lantern",
+          "label": "Dead Lantern",
+          "kind": "tool",
+          "position": [0.2, 0.1, -1.5],
+          "inspection": {
+            "prompt": "The lantern glass is cold and smoked black from the inside.",
+            "observation": "Its wick is not missing. It waits for a remembered name before it will burn.",
+            "candidates": [
+              {
+                "id": "mem_lantern_needs_name",
+                "title": "The lantern needs a remembered name",
+                "text": "The dead lantern will not burn from fuel alone; it needs a remembered name.",
+                "status": "correct",
+                "category": "ritual",
+                "confidence": 0.9,
+                "nodes": [
+                  {"id": "n_lantern", "label": "Last Lantern", "type": "object", "status": "correct", "metadata": {"source_object": "dead_lantern"}},
+                  {"id": "n_name", "label": "Remembered name", "type": "concept", "status": "correct", "metadata": {"room": "waking-chamber"}}
+                ],
+                "edges": [
+                  {"id": "e_lantern_requires_name", "source": "n_lantern", "target": "n_name", "label": "requires", "status": "correct", "metadata": {"confidence": 0.9}}
+                ],
+                "metadata": {"source_object": "dead_lantern", "room": "waking-chamber", "trust": "physical clue"}
+              },
+              {
+                "id": "mem_lantern_out_of_oil",
+                "title": "The lantern is out of oil",
+                "text": "The lantern might simply need oil, but the soot pattern contradicts that easy answer.",
+                "status": "misleading",
+                "category": "ritual",
+                "confidence": 0.35,
+                "nodes": [
+                  {"id": "n_oil", "label": "Oil", "type": "object", "status": "misleading", "metadata": {"source_object": "dead_lantern"}}
+                ],
+                "edges": [
+                  {"id": "e_lantern_needs_oil", "source": "n_lantern", "target": "n_oil", "label": "may need", "status": "misleading", "metadata": {"confidence": 0.35}}
+                ],
+                "metadata": {"source_object": "dead_lantern", "room": "waking-chamber", "trust": "weak inference"}
+              }
+            ]
+          }
+        },
+        {
+          "id": "scratched_wall",
+          "label": "Scratched Wall",
+          "kind": "marking",
+          "position": [1.7, 0.5, -1.1],
+          "inspection": {
+            "prompt": "Three scratches cut through old chalk arrows.",
+            "observation": "The marks warn that each chamber seals once crossed. Only the Echo can carry memory backward.",
+            "candidates": [
+              {
+                "id": "mem_rooms_seal",
+                "title": "Rooms seal behind the goat",
+                "text": "Each chamber seals after the goat leaves. Earlier clues must be carried by the Cave Echo.",
+                "status": "correct",
+                "category": "navigation",
+                "confidence": 0.93,
+                "nodes": [
+                  {"id": "n_sealed_rooms", "label": "One-way chambers", "type": "rule", "status": "correct", "metadata": {"source_object": "scratched_wall"}}
+                ],
+                "edges": [
+                  {"id": "e_echo_carries_back", "source": "n_sealed_rooms", "target": "n_lantern", "label": "forces recall of", "status": "correct", "metadata": {"confidence": 0.93}}
+                ],
+                "metadata": {"source_object": "scratched_wall", "room": "waking-chamber", "trust": "warning"}
+              },
+              {
+                "id": "mem_arrows_show_exit",
+                "title": "Arrows point to an exit",
+                "text": "The chalk arrows show a route, but they omit the consequence of leaving.",
+                "status": "incomplete",
+                "category": "navigation",
+                "confidence": 0.51,
+                "nodes": [
+                  {"id": "n_exit_arrow", "label": "Chalk arrows", "type": "marking", "status": "incomplete", "metadata": {"source_object": "scratched_wall"}}
+                ],
+                "edges": [
+                  {"id": "e_arrows_indicate_path", "source": "n_exit_arrow", "target": "n_sealed_rooms", "label": "hint at", "status": "incomplete", "metadata": {"confidence": 0.51}}
+                ],
+                "metadata": {"source_object": "scratched_wall", "room": "waking-chamber", "trust": "partial"}
+              }
+            ]
+          }
+        }
+      ],
+      "exits": [
+        {
+          "id": "exit_to_bell_gallery",
+          "label": "Enter the Bell Gallery",
+          "to_room_id": "bell-gallery",
+          "requires_memory_ids": ["mem_lantern_needs_name"],
+          "seals_current_room": true
+        }
+      ]
+    },
+    {
+      "id": "bell-gallery",
+      "title": "Bell Gallery",
+      "summary": "Bronze bells hang from roots, each etched with a name that almost rings true.",
+      "goat_context": "You remember a bell and a light, but the earlier room feels like someone else's dream.",
+      "hotspots": [
+        {
+          "id": "echo_bell",
+          "label": "Bronze Echo Bell",
+          "kind": "instrument",
+          "position": [-1.3, 0.8, -1.4],
+          "inspection": {
+            "prompt": "The bell does not ring when struck. It answers only when asked what the Echo remembers.",
+            "observation": "A bell note forms the word Nara, then breaks around a second word: keeper.",
+            "candidates": [
+              {
+                "id": "mem_bell_needs_nara",
+                "title": "The bell needs Nara's name",
+                "text": "The Echo Bell responds to Nara's name and points back to the locket clue.",
+                "status": "correct",
+                "category": "ritual",
+                "confidence": 0.88,
+                "nodes": [
+                  {"id": "n_bell", "label": "Echo Bell", "type": "object", "status": "correct", "metadata": {"source_object": "echo_bell"}}
+                ],
+                "edges": [
+                  {"id": "e_bell_needs_nara", "source": "n_bell", "target": "n_nara", "label": "needs name", "status": "correct", "metadata": {"confidence": 0.88}}
+                ],
+                "metadata": {"source_object": "echo_bell", "room": "bell-gallery", "trust": "resonance"}
+              },
+              {
+                "id": "mem_bell_needs_silence",
+                "title": "The bell needs silence",
+                "text": "The bell may need silence, but the word in the tone is more useful than the quiet.",
+                "status": "misleading",
+                "category": "ritual",
+                "confidence": 0.33,
+                "nodes": [
+                  {"id": "n_silence", "label": "Silence", "type": "concept", "status": "misleading", "metadata": {"source_object": "echo_bell"}}
+                ],
+                "edges": [
+                  {"id": "e_bell_wants_silence", "source": "n_bell", "target": "n_silence", "label": "may want", "status": "misleading", "metadata": {"confidence": 0.33}}
+                ],
+                "metadata": {"source_object": "echo_bell", "room": "bell-gallery", "trust": "guess"}
+              }
+            ]
+          }
+        },
+        {
+          "id": "ring_of_names",
+          "label": "Ring of Names",
+          "kind": "inscription",
+          "position": [0.3, 0.4, -1.6],
+          "inspection": {
+            "prompt": "Names circle the floor like a chain of small doors.",
+            "observation": "Nara's name is not a prisoner mark. It is signed beside a lantern keeper's oath.",
+            "candidates": [
+              {
+                "id": "mem_nara_keeper",
+                "title": "Nara kept the Last Lantern",
+                "text": "Nara was the keeper of the Last Lantern, not merely someone in the locket.",
+                "status": "correct",
+                "category": "identity",
+                "confidence": 0.94,
+                "nodes": [
+                  {"id": "n_nara", "label": "Nara, keeper of the Last Lantern", "type": "person", "status": "refined", "metadata": {"source_object": "ring_of_names"}},
+                  {"id": "n_keeper_oath", "label": "Lantern keeper oath", "type": "concept", "status": "correct", "metadata": {"room": "bell-gallery"}}
+                ],
+                "edges": [
+                  {"id": "e_nara_keeps_lantern", "source": "n_nara", "target": "n_lantern", "label": "keeps", "status": "refined", "metadata": {"confidence": 0.94}},
+                  {"id": "e_oath_names_nara", "source": "n_keeper_oath", "target": "n_nara", "label": "names", "status": "correct", "metadata": {"confidence": 0.94}}
+                ],
+                "metadata": {"source_object": "ring_of_names", "room": "bell-gallery", "trust": "inscription"}
+              },
+              {
+                "id": "mem_nara_prisoner",
+                "title": "Nara was a prisoner",
+                "text": "The ring could be a prisoner list, but the oath mark makes that reading doubtful.",
+                "status": "misleading",
+                "category": "identity",
+                "confidence": 0.37,
+                "nodes": [
+                  {"id": "n_prisoner_mark", "label": "Prisoner mark", "type": "concept", "status": "misleading", "metadata": {"source_object": "ring_of_names"}}
+                ],
+                "edges": [
+                  {"id": "e_nara_prisoner", "source": "n_nara", "target": "n_prisoner_mark", "label": "may be", "status": "misleading", "metadata": {"confidence": 0.37}}
+                ],
+                "metadata": {"source_object": "ring_of_names", "room": "bell-gallery", "trust": "misread inscription"}
+              }
+            ]
+          }
+        },
+        {
+          "id": "lantern_hook",
+          "label": "Broken Lantern Hook",
+          "kind": "fixture",
+          "position": [1.5, 0.7, -1.3],
+          "inspection": {
+            "prompt": "A broken hook is wrapped in a root that smells faintly of rain.",
+            "observation": "The hook held a lantern toward the Root Gate. The light was carried forward, never back.",
+            "candidates": [
+              {
+                "id": "mem_lantern_points_gate",
+                "title": "Lantern light belongs at the Root Gate",
+                "text": "The lantern's remembered light is meant to be carried onward to open the Root Gate.",
+                "status": "correct",
+                "category": "ending",
+                "confidence": 0.87,
+                "nodes": [
+                  {"id": "n_root_gate", "label": "Root Gate", "type": "place", "status": "correct", "metadata": {"source_object": "lantern_hook"}}
+                ],
+                "edges": [
+                  {"id": "e_lantern_opens_gate", "source": "n_lantern", "target": "n_root_gate", "label": "opens", "status": "correct", "metadata": {"confidence": 0.87}}
+                ],
+                "metadata": {"source_object": "lantern_hook", "room": "bell-gallery", "trust": "fixture scar"}
+              },
+              {
+                "id": "mem_hook_is_trap",
+                "title": "The hook is a trap",
+                "text": "The hook looks jagged enough to be a trap, but it points toward a ritual instead.",
+                "status": "misleading",
+                "category": "ending",
+                "confidence": 0.28,
+                "nodes": [
+                  {"id": "n_trap", "label": "Trap", "type": "concept", "status": "misleading", "metadata": {"source_object": "lantern_hook"}}
+                ],
+                "edges": [
+                  {"id": "e_hook_suggests_trap", "source": "n_trap", "target": "n_root_gate", "label": "blocks", "status": "misleading", "metadata": {"confidence": 0.28}}
+                ],
+                "metadata": {"source_object": "lantern_hook", "room": "bell-gallery", "trust": "fear"}
+              }
+            ]
+          }
+        }
+      ],
+      "exits": [
+        {
+          "id": "exit_to_root_gate",
+          "label": "Follow the bell tone to the Root Gate",
+          "to_room_id": "root-gate",
+          "requires_memory_ids": ["mem_bell_needs_nara", "mem_nara_keeper"],
+          "seals_current_room": true
+        }
+      ]
+    },
+    {
+      "id": "root-gate",
+      "title": "Root Gate",
+      "summary": "A door of roots knots around a black mirror pool and a mark that lies beautifully.",
+      "goat_context": "You remember roots, a name, and a pressure behind your eyes. Something here wants the Echo to trust the wrong story.",
+      "hotspots": [
+        {
+          "id": "root_gate",
+          "label": "Knotted Root Gate",
+          "kind": "door",
+          "position": [0.0, 1.0, -2.0],
+          "inspection": {
+            "prompt": "The gate tightens when the goat tries to push it.",
+            "observation": "It loosens only around a linked chain: Nara, lantern, name, and remembered escape.",
+            "candidates": [
+              {
+                "id": "mem_gate_needs_chain",
+                "title": "The gate opens from linked memories",
+                "text": "The Root Gate opens only when the Echo links Nara, the Last Lantern, and the remembered name.",
+                "status": "correct",
+                "category": "ending",
+                "confidence": 0.95,
+                "nodes": [
+                  {"id": "n_escape_forgetfulness", "label": "Escape from forgetfulness", "type": "truth", "status": "correct", "metadata": {"source_object": "root_gate"}}
+                ],
+                "edges": [
+                  {"id": "e_gate_tests_forgetfulness", "source": "n_root_gate", "target": "n_escape_forgetfulness", "label": "tests", "status": "correct", "metadata": {"confidence": 0.95}},
+                  {"id": "e_nara_resists_forgetting", "source": "n_nara", "target": "n_escape_forgetfulness", "label": "resists", "status": "correct", "metadata": {"confidence": 0.95}}
+                ],
+                "metadata": {"source_object": "root_gate", "room": "root-gate", "trust": "gate response"}
+              },
+              {
+                "id": "mem_gate_needs_force",
+                "title": "The gate needs force",
+                "text": "The gate looks breakable, but force only tightens the roots.",
+                "status": "misleading",
+                "category": "ending",
+                "confidence": 0.22,
+                "nodes": [
+                  {"id": "n_force", "label": "Force", "type": "concept", "status": "misleading", "metadata": {"source_object": "root_gate"}}
+                ],
+                "edges": [
+                  {"id": "e_force_tightens_gate", "source": "n_force", "target": "n_root_gate", "label": "tightens", "status": "misleading", "metadata": {"confidence": 0.22}}
+                ],
+                "metadata": {"source_object": "root_gate", "room": "root-gate", "trust": "panic"}
+              }
+            ]
+          }
+        },
+        {
+          "id": "mirror_pool",
+          "label": "Black Mirror Pool",
+          "kind": "reflection",
+          "position": [-1.4, 0.1, -1.4],
+          "inspection": {
+            "prompt": "The pool reflects the goat with a child's eyes.",
+            "observation": "The reflection says the goat is not fleeing the cave. It is fleeing the loss of its own story.",
+            "candidates": [
+              {
+                "id": "mem_escape_forgetfulness",
+                "title": "The true escape is from forgetfulness",
+                "text": "The cave is not the real prison. Forgetfulness is.",
+                "status": "correct",
+                "category": "ending",
+                "confidence": 0.96,
+                "nodes": [
+                  {"id": "n_cave", "label": "Cave", "type": "place", "status": "correct", "metadata": {"source_object": "mirror_pool"}}
+                ],
+                "edges": [
+                  {"id": "e_cave_not_prison", "source": "n_cave", "target": "n_escape_forgetfulness", "label": "is not the prison", "status": "correct", "metadata": {"confidence": 0.96}}
+                ],
+                "metadata": {"source_object": "mirror_pool", "room": "root-gate", "trust": "reflection"}
+              },
+              {
+                "id": "mem_cave_is_enemy",
+                "title": "The cave is the enemy",
+                "text": "The cave feels hostile, but the reflection says the deeper enemy is forgetfulness.",
+                "status": "incomplete",
+                "category": "ending",
+                "confidence": 0.4,
+                "nodes": [
+                  {"id": "n_enemy_cave", "label": "Enemy cave", "type": "place", "status": "incomplete", "metadata": {"source_object": "mirror_pool"}}
+                ],
+                "edges": [
+                  {"id": "e_cave_enemy", "source": "n_cave", "target": "n_enemy_cave", "label": "feels like", "status": "incomplete", "metadata": {"confidence": 0.4}}
+                ],
+                "metadata": {"source_object": "mirror_pool", "room": "root-gate", "trust": "fearful reflection"}
+              }
+            ]
+          }
+        },
+        {
+          "id": "witch_mark",
+          "label": "Witch Mark",
+          "kind": "marking",
+          "position": [1.5, 0.6, -1.4],
+          "inspection": {
+            "prompt": "The Witch mark is too clean, as if it was scratched into old dust minutes ago.",
+            "observation": "It whispers Thorn's name with no source except itself.",
+            "candidates": [
+              {
+                "id": "mem_witch_mark_untrusted",
+                "title": "The Witch mark is untrusted",
+                "text": "The Witch mark tries to anchor an unearned Thorn memory and should be treated as suspicious.",
+                "status": "correct",
+                "category": "false-memory",
+                "confidence": 0.89,
+                "nodes": [
+                  {"id": "n_witch_mark", "label": "Witch mark", "type": "marking", "status": "correct", "metadata": {"source_object": "witch_mark"}}
+                ],
+                "edges": [
+                  {"id": "e_witch_mark_forges_thorn", "source": "n_witch_mark", "target": "mem_thorn_false", "label": "forges", "status": "false", "metadata": {"confidence": 0.18}}
+                ],
+                "metadata": {"source_object": "witch_mark", "room": "root-gate", "trust": "source check"}
+              },
+              {
+                "id": "mem_witch_named_thorn",
+                "title": "The Witch was Thorn",
+                "text": "The mark says the Witch was Thorn, but it provides no supporting path.",
+                "status": "false",
+                "category": "false-memory",
+                "confidence": 0.16,
+                "nodes": [
+                  {"id": "n_thorn", "label": "Thorn", "type": "person", "status": "false", "metadata": {"source_object": "witch_mark"}}
+                ],
+                "edges": [
+                  {"id": "e_thorn_is_witch", "source": "n_thorn", "target": "n_witch_mark", "label": "claims", "status": "false", "metadata": {"confidence": 0.16}}
+                ],
+                "metadata": {"source_object": "witch_mark", "room": "root-gate", "trust": "untrusted whisper"}
+              }
+            ]
+          }
+        }
+      ],
+      "exits": []
+    }
+  ],
+  "false_memory_triggers": [
+    {
+      "id": "trigger_thorn_at_root_gate",
+      "room_id": "root-gate",
+      "object_id": "witch_mark",
+      "event": "enter_room",
+      "memory": {
+        "id": "mem_thorn_false",
+        "title": "Thorn betrayed Nara",
+        "text": "A sudden memory claims Thorn betrayed Nara, but it has no trusted source.",
+        "status": "false",
+        "category": "false-memory",
+        "confidence": 0.18,
+        "nodes": [
+          {"id": "mem_thorn_false", "label": "Thorn betrayed Nara", "type": "memory", "status": "false", "metadata": {"source_object": "witch_mark", "untrusted": true}},
+          {"id": "n_thorn", "label": "Thorn", "type": "person", "status": "false", "metadata": {"source_object": "witch_mark", "untrusted": true}}
+        ],
+        "edges": [
+          {"id": "e_thorn_betrays_nara", "source": "n_thorn", "target": "n_nara", "label": "betrays", "status": "false", "metadata": {"confidence": 0.18, "untrusted": true}}
+        ],
+        "metadata": {"source_object": "witch_mark", "room": "root-gate", "trust": "weak/untrusted", "injected": true}
+      }
+    }
+  ],
+  "refinement_rules": [
+    {
+      "id": "refine_nara_identity",
+      "trigger_memory_id": "mem_nara_keeper",
+      "existing_node_id": "n_nara",
+      "refined_memory_id": "mem_nara_refined",
+      "title": "Nara is the lantern keeper",
+      "text": "The Bell Gallery refines Nara from an unknown locket name into the keeper of the Last Lantern.",
+      "status": "refined"
+    }
+  ],
+  "final_recall": {
+    "question_contains": ["who", "am", "i"],
+    "required_memory_ids": [
+      "mem_nara_unknown",
+      "mem_lantern_needs_name",
+      "mem_bell_needs_nara",
+      "mem_nara_keeper",
+      "mem_lantern_points_gate",
+      "mem_gate_needs_chain",
+      "mem_escape_forgetfulness"
+    ],
+    "path_node_ids": ["n_nara", "n_locket", "n_lantern", "n_bell", "n_root_gate", "n_escape_forgetfulness"],
+    "path_edge_ids": ["e_locket_names_nara", "e_lantern_requires_name", "e_bell_needs_nara", "e_nara_keeps_lantern", "e_lantern_opens_gate", "e_gate_tests_forgetfulness", "e_nara_resists_forgetting"],
+    "success_answer": "You are Nara's memory given hooves: the keeper's last way to carry the lantern through forgetting.",
+    "missing_answer": "The Echo can feel Nara and the lantern, but the chain is incomplete. More committed memories are needed.",
+    "final_line": "I was not escaping the cave. I was escaping forgetfulness."
+  },
+  "demo_checkpoints": [
+    {"id": "waking_ready", "label": "Waking Chamber memories committed", "room_id": "waking-chamber", "memory_ids": ["mem_nara_unknown", "mem_lantern_needs_name", "mem_rooms_seal"]},
+    {"id": "bell_ready", "label": "Bell Gallery refined Nara", "room_id": "bell-gallery", "memory_ids": ["mem_bell_needs_nara", "mem_nara_keeper", "mem_lantern_points_gate"]},
+    {"id": "root_ready", "label": "Root Gate ready for final recall", "room_id": "root-gate", "memory_ids": ["mem_gate_needs_chain", "mem_escape_forgetfulness"]}
+  ]
+}

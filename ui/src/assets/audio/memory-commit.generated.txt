@@ -1,0 +1,1 @@
+Generated placeholder sound cue: low chime; UI also shows "Memory committed."

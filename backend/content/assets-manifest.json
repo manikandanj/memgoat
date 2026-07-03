@@ -1,0 +1,23 @@
+{
+  "scenes": {
+    "waking_chamber": "ui/src/assets/scenes/waking-chamber.generated.txt",
+    "bell_gallery": "ui/src/assets/scenes/bell-gallery.generated.txt",
+    "root_gate": "ui/src/assets/scenes/root-gate.generated.txt"
+  },
+  "objects": {
+    "locket": "ui/src/assets/objects/locket.generated.txt",
+    "dead_lantern": "ui/src/assets/objects/dead-lantern.generated.txt",
+    "scratched_wall": "ui/src/assets/objects/scratched-wall.generated.txt",
+    "echo_bell": "ui/src/assets/objects/echo-bell.generated.txt",
+    "ring_of_names": "ui/src/assets/objects/ring-of-names.generated.txt",
+    "lantern_hook": "ui/src/assets/objects/lantern-hook.generated.txt",
+    "root_gate": "ui/src/assets/objects/root-gate.generated.txt",
+    "mirror_pool": "ui/src/assets/objects/mirror-pool.generated.txt",
+    "witch_mark": "ui/src/assets/objects/witch-mark.generated.txt"
+  },
+  "audio": {
+    "memory_commit": "ui/src/assets/audio/memory-commit.generated.txt",
+    "reset": "ui/src/assets/audio/reset.generated.txt",
+    "gate_open": "ui/src/assets/audio/gate-open.generated.txt"
+  }
+}
