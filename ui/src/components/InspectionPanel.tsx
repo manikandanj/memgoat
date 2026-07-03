@@ -24,7 +24,7 @@ export function InspectionPanel({ inspection }: { inspection: Inspection }) {
             <button key={candidate.id} type="button" className={`candidate ${candidate.status}`} onClick={() => void commit(candidate.id)}>
               <strong>{candidate.title}</strong>
               <span>{candidate.text}</span>
-              <small>{candidate.status} · {Math.round(candidate.confidence * 100)}%</small>
+              <small>{candidate.status} - {Math.round(candidate.confidence * 100)}%</small>
             </button>
           ))}
         </div>
