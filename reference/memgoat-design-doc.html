@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MemGoat: Cave Escape — Design Document v0.1</title>
+<style>
+  :root {
+    --ink: #1C1917;
+    --ink-soft: #57534E;
+    --ink-muted: #A8A29E;
+    --page: #FDFCF9;
+    --rule: #E7E5DF;
+    --amber: #92400E;
+    --amber-light: #FEF3C7;
+    --amber-border: #F59E0B;
+    --teal: #0F766E;
+    --teal-light: #CCFBF1;
+    --coral: #9F3412;
+    --coral-light: #FEE2E2;
+    --purple: #5B21B6;
+    --purple-light: #EDE9FE;
+    --code-bg: #F5F4F0;
+    --open-bg: #FFFBEB;
+    --open-border: #F59E0B;
+    --radius: 8px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--page);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+  }
+
+  /* ---- Header ---- */
+  .doc-header {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 24px;
+    margin-bottom: 40px;
+  }
+  .doc-header .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .doc-header h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  .doc-header .meta {
+    font-size: 13px;
+    color: var(--ink-soft);
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .doc-header .meta span { display: flex; align-items: center; gap: 6px; }
+
+  /* ---- Section ---- */
+  section { margin-bottom: 52px; }
+  h2 {
+    font-family: Georgia, serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink);
+  }
+  h3 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-top: 24px;
+    margin-bottom: 8px;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  p { margin-bottom: 14px; color: var(--ink-soft); }
+  p strong { color: var(--ink); }
+  ul, ol { padding-left: 22px; margin-bottom: 14px; color: var(--ink-soft); }
+  li { margin-bottom: 5px; }
+  li strong { color: var(--ink); }
+
+  /* ---- Table ---- */
+  .data-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+  .data-table th {
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .data-table td { padding: 10px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:nth-child(even) td { background: #FAF9F6; }
+  code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; background: var(--code-bg); padding: 2px 6px; border-radius: 4px; color: var(--amber); }
+
+  /* ---- Callout boxes ---- */
+  .callout {
+    border-left: 3px solid var(--amber-border);
+    background: var(--open-bg);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+  .callout .callout-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--amber);
+    margin-bottom: 6px;
+  }
+  .callout p { margin-bottom: 6px; color: var(--ink-soft); }
+  .callout p:last-child { margin-bottom: 0; }
+
+  .callout.teal { border-left-color: var(--teal); background: var(--teal-light); }
+  .callout.teal .callout-label { color: var(--teal); }
+  .callout.coral { border-left-color: var(--coral); background: var(--coral-light); }
+  .callout.coral .callout-label { color: var(--coral); }
+  .callout.purple { border-left-color: var(--purple); background: var(--purple-light); }
+  .callout.purple .callout-label { color: var(--purple); }
+
+  /* ---- Verb cards (actions) ---- */
+  .verb-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 20px 0; }
+  .verb-card {
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 20px;
+    background: #fff;
+  }
+  .verb-card .verb-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  .verb-card.examine .verb-tag { background: var(--teal-light); color: var(--teal); }
+  .verb-card.ask .verb-tag { background: var(--purple-light); color: var(--purple); }
+  .verb-card.dismiss .verb-tag { background: var(--coral-light); color: var(--coral); }
+  .verb-card h3 { margin-top: 0; text-transform: none; letter-spacing: 0; font-size: 18px; font-family: Georgia, serif; }
+  .verb-card .api-call { font-size: 12px; color: var(--ink-muted); margin: 6px 0 10px; }
+  .verb-card p { font-size: 14px; }
+  .verb-card .constraint { font-size: 12px; font-weight: 600; margin-top: 10px; padding: 6px 10px; border-radius: 4px; }
+  .verb-card.examine .constraint { background: var(--teal-light); color: var(--teal); }
+  .verb-card.ask .constraint { background: var(--purple-light); color: var(--purple); }
+  .verb-card.dismiss .constraint { background: var(--coral-light); color: var(--coral); }
+
+  /* ---- Diagrams ---- */
+  .diagram-wrap { margin: 28px 0; }
+  .diagram-wrap figcaption {
+    font-size: 12px;
+    color: var(--ink-muted);
+    text-align: center;
+    margin-top: 8px;
+  }
+  svg text { font-family: system-ui, sans-serif; }
+
+  /* ---- Open items ---- */
+  .open-items { counter-reset: open-item; }
+  .open-item {
+    border: 1px solid var(--amber-border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    background: var(--open-bg);
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    font-size: 14px;
+  }
+  .open-item-number {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--amber-border);
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+  }
+  .open-item strong { color: var(--ink); display: block; margin-bottom: 3px; }
+  .open-item p { margin: 0; color: var(--ink-soft); }
+
+  /* ---- Arch stack ---- */
+  .arch-stack { display: flex; flex-direction: column; gap: 8px; margin: 20px 0; }
+  .arch-layer {
+    border-radius: var(--radius);
+    padding: 12px 18px;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .arch-layer .layer-label { font-weight: 600; color: var(--ink); }
+  .arch-layer .layer-detail { font-size: 12px; color: var(--ink-soft); }
+  .arch-layer.frontend { background: var(--purple-light); }
+  .arch-layer.backend { background: var(--teal-light); }
+  .arch-layer.cognee { background: var(--amber-light); }
+  .arch-layer.llm { background: var(--coral-light); }
+
+  /* ---- Footer ---- */
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule);
+    font-size: 12px;
+    color: var(--ink-muted);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="doc-header">
+  <div class="eyebrow">Design Document · v0.1 · Draft</div>
+  <h1>MemGoat: Cave Escape</h1>
+  <div class="meta">
+    <span>🏆 WeMakeDevs × Cognee Hackathon</span>
+    <span>📅 Jun 29 – Jul 5, 2026</span>
+    <span>📌 Status: For team review</span>
+  </div>
+</header>
+
+
+<!-- ===== 1. CONCEPT ===== -->
+<section>
+  <h2>1. Concept in One Paragraph</h2>
+  <p>
+    A puzzle-driven escape room where the player controls a goat trying to find its way out of a multi-room cave. The goat has short-term memory loss — it is an LLM, and every 2 minutes its session resets and it forgets everything. The cave contains artifacts (tablets, paintings, statues) that hold clues, but <strong>no single clue reveals the answer</strong>. The exit is only reachable by connecting 3–4 clues into a chain. The player actively examines artifacts, feeds them into Cognee (the goat's external knowledge graph), then queries Cognee in natural language to surface the connected chain. The game's core demo moment: the timer hits zero, the goat wakes up confused, the player asks "What do I know?" — and Cognee returns the full graph of everything discovered so far. The LLM forgot. Cognee didn't.
+  </p>
+
+  <div class="callout teal">
+    <div class="callout-label">Why this is a good Cognee fit</div>
+    <p>The game only works because of graph traversal. Individual clues are useless. The escape path emerges from Cognee connecting them. A vector database or a simple array cannot do this — Cognee's entity-relationship graph is non-negotiable for the core mechanic.</p>
+  </div>
+</section>
+
+
+<!-- ===== 2. CORE METAPHOR ===== -->
+<section>
+  <h2>2. The Core Metaphor</h2>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>In the game world</th>
+        <th>Technical reality</th>
+        <th>Cognee API</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>The Goat</td>
+        <td>An LLM — stateless, forgets each session</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>Goat's working memory</td>
+        <td>LLM session context (2-min window)</td>
+        <td>New session = new LLM call</td>
+      </tr>
+      <tr>
+        <td>The Cave's Ancient Memory <em>(TBD name)</em></td>
+        <td>Cognee knowledge graph — persists forever</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>Goat "examines" an artifact</td>
+        <td>Clue is ingested, entities &amp; relationships extracted, added to graph</td>
+        <td><code>remember()</code></td>
+      </tr>
+      <tr>
+        <td>Goat "asks" a question</td>
+        <td>Natural language query → graph traversal → connected chain returned</td>
+        <td><code>recall()</code></td>
+      </tr>
+      <tr>
+        <td>Goat "dismisses" a red herring</td>
+        <td>Node surgically removed from the knowledge graph</td>
+        <td><code>forget()</code></td>
+      </tr>
+      <tr>
+        <td>2-minute timer resets</td>
+        <td>New LLM session begins — conversational context gone</td>
+        <td>New session (not Cognee)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <div class="callout-label">Open item</div>
+    <p>What do we call the Cognee layer in-game? "The Cave's Ancient Memory"? "The Echo"? "Deep Instinct"? It shouldn't be called Cognee in-game. See Open Items section.</p>
+  </div>
+
+  <!-- Metaphor diagram -->
+  <div class="diagram-wrap">
+    <figure>
+      <svg width="100%" viewBox="0 0 760 180" xmlns="http://www.w3.org/2000/svg">
+        <!-- LLM box -->
+        <rect x="20" y="30" width="200" height="120" rx="10" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
+        <text x="120" y="60" text-anchor="middle" font-size="13" font-weight="700" fill="#92400E">The Goat (LLM)</text>
+        <text x="120" y="82" text-anchor="middle" font-size="12" fill="#78716C">Stateless. Forgets every</text>
+        <text x="120" y="98" text-anchor="middle" font-size="12" fill="#78716C">2 minutes when session</text>
+        <text x="120" y="114" text-anchor="middle" font-size="12" fill="#78716C">resets. Has no memory</text>
+        <text x="120" y="130" text-anchor="middle" font-size="12" fill="#78716C">of past sessions.</text>
+
+        <!-- Timer badge -->
+        <rect x="75" y="135" width="90" height="22" rx="11" fill="#F59E0B"/>
+        <text x="120" y="150" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">⏱ 2:00 reset</text>
+
+        <!-- Arrows -->
+        <line x1="222" y1="78" x2="290" y2="78" stroke="#0F766E" stroke-width="1.5" marker-end="url(#ar-teal)"/>
+        <text x="256" y="70" text-anchor="middle" font-size="10" fill="#0F766E">remember()</text>
+        <line x1="290" y1="108" x2="222" y2="108" stroke="#5B21B6" stroke-width="1.5" marker-end="url(#ar-purple)"/>
+        <text x="256" y="122" text-anchor="middle" font-size="10" fill="#5B21B6">recall()</text>
+        <line x1="222" y1="148" x2="290" y2="148" stroke="#9F3412" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ar-coral)"/>
+        <text x="256" y="141" text-anchor="middle" font-size="10" fill="#9F3412">forget()</text>
+
+        <!-- Cognee box -->
+        <rect x="292" y="30" width="300" height="120" rx="10" fill="#CCFBF1" stroke="#0F766E" stroke-width="1.5"/>
+        <text x="442" y="60" text-anchor="middle" font-size="13" font-weight="700" fill="#0F766E">Cognee (Knowledge Graph)</text>
+        <text x="442" y="82" text-anchor="middle" font-size="12" fill="#4B5563">Persistent across sessions.</text>
+        <text x="442" y="98" text-anchor="middle" font-size="12" fill="#4B5563">Extracts entities &amp; relations.</text>
+        <text x="442" y="114" text-anchor="middle" font-size="12" fill="#4B5563">Traverses graph to find chains.</text>
+        <text x="442" y="130" text-anchor="middle" font-size="12" fill="#4B5563">Survives LLM memory wipes.</text>
+
+        <!-- graph mini -->
+        <circle cx="620" cy="72" r="14" fill="#0F766E" opacity="0.9"/>
+        <text x="620" y="76" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">Moon</text>
+        <circle cx="680" cy="100" r="14" fill="#185FA5" opacity="0.9"/>
+        <text x="680" y="104" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">Falls</text>
+        <circle cx="720" cy="60" r="14" fill="#5B21B6" opacity="0.9"/>
+        <text x="720" y="64" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">Door</text>
+        <circle cx="740" y="130" r="12" fill="#9F3412" opacity="0.5" cx="720" cy="130"/>
+        <text x="720" y="134" text-anchor="middle" font-size="9" fill="#fff">Exit</text>
+        <line x1="634" y1="72" x2="666" y2="95" stroke="#fff" stroke-width="1.2" opacity="0.7"/>
+        <line x1="694" y1="100" x2="708" y2="68" stroke="#fff" stroke-width="1.2" opacity="0.7"/>
+        <line x1="720" y1="74" x2="720" y2="118" stroke="#fff" stroke-width="1.2" opacity="0.7"/>
+
+        <defs>
+          <marker id="ar-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="#0F766E" stroke-width="1.5"/>
+          </marker>
+          <marker id="ar-purple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="#5B21B6" stroke-width="1.5"/>
+          </marker>
+          <marker id="ar-coral" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="#9F3412" stroke-width="1.5"/>
+          </marker>
+        </defs>
+      </svg>
+      <figcaption>Fig 1 — The goat (LLM) and Cognee operate as two separate memory systems. Cognee persists; the LLM forgets.</figcaption>
+    </figure>
+  </div>
+</section>
+
+
+<!-- ===== 3. PLAYER ACTIONS ===== -->
+<section>
+  <h2>3. Player Active Actions</h2>
+  <p>The player has exactly <strong>three verbs</strong>. Each maps to one Cognee API. The game is designed so all three are exercised and each feels meaningful.</p>
+
+  <div class="verb-grid">
+
+    <div class="verb-card examine">
+      <div class="verb-tag">Action 1</div>
+      <h3>Examine</h3>
+      <div class="api-call">→ <code>remember()</code></div>
+      <p>Player moves goat near an artifact and clicks "Examine." The LLM narrates what the goat perceives. The clue is ingested into Cognee, which extracts entities and relationships and adds them to the knowledge graph.</p>
+      <div class="constraint">⚠ Limit: 3 per 2-minute session. Choose wisely.</div>
+    </div>
+
+    <div class="verb-card ask">
+      <div class="verb-tag">Action 2</div>
+      <h3>Ask the Cave</h3>
+      <div class="api-call">→ <code>recall()</code></div>
+      <p>Player types a natural language question ("What connects the moon to the exit?"). Cognee performs a graph traversal and returns a connected chain — not individual clues, but a path. The chain is rendered visually as linked nodes.</p>
+      <div class="constraint">💡 Skill: Better questions surface clearer chains.</div>
+    </div>
+
+    <div class="verb-card dismiss">
+      <div class="verb-tag">Action 3</div>
+      <h3>Dismiss</h3>
+      <div class="api-call">→ <code>forget()</code></div>
+      <p>After examining a clue the player suspects is a red herring, they can dismiss it permanently. The node is removed from Cognee's graph. <strong>Irreversible</strong> — if you dismiss a real clue, it's gone until found and re-examined.</p>
+      <div class="constraint">🚨 Irreversible. Adds real stakes to the decision.</div>
+    </div>
+
+  </div>
+
+  <h3>The 3-Examine Limit is the Core Design Constraint</h3>
+  <p>Each room contains more artifacts than the player can examine in a single 2-minute session. This forces the player to read the room, prioritize, and make bets on which clues matter. Over multiple sessions, the graph fills up incrementally. This means:</p>
+  <ul>
+    <li>Players who examine strategically build a better graph faster</li>
+    <li>Players who examine randomly may waste sessions on red herrings</li>
+    <li>The constraint is a natural pacing mechanism — the game can't be rushed</li>
+  </ul>
+
+  <div class="callout">
+    <div class="callout-label">Open item</div>
+    <p>Is 3 the right per-session limit? Needs playtesting. Too few = frustrating; too many = no meaningful choice. Could make it room-dependent (tutorial room has 4 slots, harder rooms have 2).</p>
+  </div>
+</section>
+
+
+<!-- ===== 4. GAME LOOP ===== -->
+<section>
+  <h2>4. Game Loop</h2>
+
+  <div class="diagram-wrap">
+    <figure>
+      <svg width="100%" viewBox="0 0 760 440" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="#57534E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+          <marker id="arr2-amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="#92400E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+          <marker id="arr2-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="#0F766E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+
+        <!-- Row 1: Start → Navigate → Examine -->
+        <rect x="20" y="40" width="120" height="50" rx="8" fill="#F5F4F0" stroke="#D6D3CF" stroke-width="1"/>
+        <text x="80" y="62" text-anchor="middle" font-size="12" font-weight="700" fill="#1C1917">Session starts</text>
+        <text x="80" y="78" text-anchor="middle" font-size="11" fill="#78716C">Timer: 2:00</text>
+
+        <line x1="142" y1="65" x2="172" y2="65" stroke="#57534E" stroke-width="1.2" marker-end="url(#arr2)"/>
+
+        <rect x="174" y="40" width="120" height="50" rx="8" fill="#F5F4F0" stroke="#D6D3CF" stroke-width="1"/>
+        <text x="234" y="62" text-anchor="middle" font-size="12" font-weight="700" fill="#1C1917">Navigate cave</text>
+        <text x="234" y="78" text-anchor="middle" font-size="11" fill="#78716C">Explore rooms</text>
+
+        <line x1="296" y1="65" x2="326" y2="65" stroke="#57534E" stroke-width="1.2" marker-end="url(#arr2)"/>
+
+        <rect x="328" y="30" width="130" height="70" rx="8" fill="#CCFBF1" stroke="#0F766E" stroke-width="1.5"/>
+        <text x="393" y="53" text-anchor="middle" font-size="12" font-weight="700" fill="#0F766E">Examine artifact</text>
+        <text x="393" y="70" text-anchor="middle" font-size="11" fill="#0F766E">remember() →</text>
+        <text x="393" y="85" text-anchor="middle" font-size="11" fill="#0F766E">Cognee graph grows</text>
+
+        <line x1="460" y1="65" x2="490" y2="65" stroke="#57534E" stroke-width="1.2" marker-end="url(#arr2)"/>
+
+        <rect x="492" y="40" width="120" height="50" rx="8" fill="#F5F4F0" stroke="#D6D3CF" stroke-width="1"/>
+        <text x="552" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="#1C1917">Slots used?</text>
+        <text x="552" y="76" text-anchor="middle" font-size="11" fill="#78716C">3 of 3 examined</text>
+
+        <!-- Row 2 -->
+        <!-- Ask branch -->
+        <line x1="393" y1="100" x2="393" y2="135" stroke="#5B21B6" stroke-width="1.2" marker-end="url(#arr2)"/>
+        <text x="405" y="122" font-size="10" fill="#5B21B6">at any time</text>
+
+        <rect x="328" y="137" width="130" height="70" rx="8" fill="#EDE9FE" stroke="#5B21B6" stroke-width="1.5"/>
+        <text x="393" y="158" text-anchor="middle" font-size="12" font-weight="700" fill="#5B21B6">Ask the cave</text>
+        <text x="393" y="175" text-anchor="middle" font-size="11" fill="#5B21B6">recall() → graph</text>
+        <text x="393" y="191" text-anchor="middle" font-size="11" fill="#5B21B6">traversal → chain</text>
+
+        <line x1="393" y1="207" x2="393" y2="240" stroke="#57534E" stroke-width="1.2" marker-end="url(#arr2)"/>
+
+        <rect x="328" y="242" width="130" height="60" rx="8" fill="#F5F4F0" stroke="#D6D3CF" stroke-width="1"/>
+        <text x="393" y="266" text-anchor="middle" font-size="12" font-weight="700" fill="#1C1917">Act on chain</text>
+        <text x="393" y="282" text-anchor="middle" font-size="11" fill="#78716C">Navigate goat to the</text>
+
+        <!-- Escape? branch -->
+        <line x1="393" y1="302" x2="393" y2="335" stroke="#57534E" stroke-width="1.2" marker-end="url(#arr2)"/>
+
+        <rect x="328" y="337" width="130" height="60" rx="8" fill="#F5F4F0" stroke="#D6D3CF" stroke-width="1"/>
+        <text x="393" y="362" text-anchor="middle" font-size="12" font-weight="700" fill="#1C1917">Escape unlocked?</text>
+        <text x="393" y="378" text-anchor="middle" font-size="11" fill="#78716C">Full chain in graph?</text>
+
+        <!-- Yes branch -->
+        <line x1="460" y1="367" x2="600" y2="367" stroke="#0F766E" stroke-width="1.5" marker-end="url(#arr2-teal)"/>
+        <text x="530" y="358" text-anchor="middle" font-size="10" fill="#0F766E">YES →</text>
+
+        <rect x="602" y="342" width="120" height="50" rx="8" fill="#CCFBF1" stroke="#0F766E" stroke-width="2"/>
+        <text x="662" y="363" text-anchor="middle" font-size="13" font-weight="700" fill="#0F766E">🐐 Escaped!</text>
+        <text x="662" y="380" text-anchor="middle" font-size="11" fill="#0F766E">Goat is free</text>
+
+        <!-- Timer reset branch (from "Slots used" or timer hits 0) -->
+        <line x1="552" y1="90" x2="552" y2="155" stroke="#92400E" stroke-width="1.2" stroke-dasharray="5 3" marker-end="url(#arr2-amber)"/>
+        <line x1="612" y1="65" x2="660" y2="65" stroke="#92400E" stroke-width="1.2" stroke-dasharray="5 3"/>
+        <line x1="660" y1="65" x2="660" y2="155" stroke="#92400E" stroke-width="1.2" stroke-dasharray="5 3" marker-end="url(#arr2-amber)"/>
+
+        <rect x="500" y="157" width="190" height="70" rx="8" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
+        <text x="595" y="178" text-anchor="middle" font-size="12" font-weight="700" fill="#92400E">Timer resets (or slots full)</text>
+        <text x="595" y="195" text-anchor="middle" font-size="11" fill="#92400E">New LLM session. Goat</text>
+        <text x="595" y="210" text-anchor="middle" font-size="11" fill="#92400E">"wakes up" confused.</text>
+
+        <!-- Re-orient arrow -->
+        <line x1="595" y1="227" x2="595" y2="270" stroke="#92400E" stroke-width="1.2" marker-end="url(#arr2-amber)"/>
+        <rect x="500" y="272" width="190" height="60" rx="8" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
+        <text x="595" y="295" text-anchor="middle" font-size="12" font-weight="700" fill="#92400E">Ask: "What do I know?"</text>
+        <text x="595" y="311" text-anchor="middle" font-size="11" fill="#92400E">Cognee returns full</text>
+        <text x="595" y="324" text-anchor="middle" font-size="10" fill="#92400E">graph summary → reorient</text>
+
+        <!-- Arrow back to Navigate -->
+        <path d="M 595 332 Q 595 420 234 420 Q 40 420 40 130 Q 40 90 78 90" fill="none" stroke="#57534E" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr2)"/>
+        <text x="310" y="415" text-anchor="middle" font-size="10" fill="#78716C">Continue exploring →</text>
+      </svg>
+      <figcaption>Fig 2 — Game loop. The dashed amber path shows what happens when the timer resets: new LLM session, goat re-orients via Cognee, then continues.</figcaption>
+    </figure>
+  </div>
+
+  <h3>The Timer Reset is a Feature, Not a Penalty</h3>
+  <p>When the LLM session resets, the player doesn't lose anything in Cognee. What they lose is conversational context — the goat forgets what it was just thinking about. The re-orientation query ("What do I know?") is the game's best demo moment: Cognee returns a structured summary of all discovered knowledge, organized as a graph, regardless of how many sessions have passed.</p>
+</section>
+
+
+<!-- ===== 5. SAMPLE PUZZLE CHAIN ===== -->
+<section>
+  <h2>5. Sample Puzzle Chain</h2>
+  <p>This example illustrates how puzzle design must work. Each artifact alone is useless. The path only emerges from graph traversal.</p>
+
+  <h3>The artifacts in Room 3</h3>
+  <table class="data-table">
+    <thead>
+      <tr><th>Artifact</th><th>What it says</th><th>Type</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Stone Tablet</td><td>"The Moon opens the Blue Door"</td><td>Real clue</td></tr>
+      <tr><td>Cave Wall</td><td>"The Blue Door is behind the waterfall"</td><td>Real clue</td></tr>
+      <tr><td>Old Painting</td><td>"Goats are terrified of wolves"</td><td>Red herring 🚨</td></tr>
+      <tr><td>Statue</td><td>"The wolf statue points toward moonlight"</td><td>Red herring 🚨</td></tr>
+      <tr><td>Crumbling Note</td><td>"The waterfall only appears under moonlight"</td><td>Real clue</td></tr>
+    </tbody>
+  </table>
+
+  <div class="diagram-wrap">
+    <figure>
+      <svg width="100%" viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="#0F766E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+          <marker id="arr3-muted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="#A8A29E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+
+        <!-- Main chain nodes -->
+        <rect x="30" y="100" width="100" height="50" rx="24" fill="#F59E0B" stroke="#92400E" stroke-width="1.5"/>
+        <text x="80" y="121" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Moon</text>
+        <text x="80" y="138" text-anchor="middle" font-size="10" fill="#FEF3C7">Stone tablet</text>
+
+        <line x1="132" y1="125" x2="175" y2="125" stroke="#0F766E" stroke-width="1.5" marker-end="url(#arr3)"/>
+        <text x="153" y="118" text-anchor="middle" font-size="10" fill="#0F766E">triggers</text>
+
+        <rect x="177" y="100" width="130" height="50" rx="24" fill="#185FA5" stroke="#0C447C" stroke-width="1.5"/>
+        <text x="242" y="121" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Waterfall</text>
+        <text x="242" y="138" text-anchor="middle" font-size="10" fill="#B5D4F4">Crumbling note</text>
+
+        <line x1="309" y1="125" x2="352" y2="125" stroke="#0F766E" stroke-width="1.5" marker-end="url(#arr3)"/>
+        <text x="330" y="118" text-anchor="middle" font-size="10" fill="#0F766E">reveals</text>
+
+        <rect x="354" y="100" width="130" height="50" rx="24" fill="#5B21B6" stroke="#3C1F8C" stroke-width="1.5"/>
+        <text x="419" y="121" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Blue Door</text>
+        <text x="419" y="138" text-anchor="middle" font-size="10" fill="#C4B5FD">Cave wall</text>
+
+        <line x1="486" y1="125" x2="529" y2="125" stroke="#0F766E" stroke-width="1.5" marker-end="url(#arr3)"/>
+        <text x="508" y="118" text-anchor="middle" font-size="10" fill="#0F766E">opens to</text>
+
+        <rect x="531" y="100" width="100" height="50" rx="24" fill="#0F766E" stroke="#085041" stroke-width="1.5"/>
+        <text x="581" y="121" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Exit</text>
+        <text x="581" y="138" text-anchor="middle" font-size="10" fill="#CCFBF1">Freedom!</text>
+
+        <!-- Red herring cluster -->
+        <rect x="120" y="195" width="100" height="44" rx="8" fill="#FEE2E2" stroke="#9F3412" stroke-width="1" stroke-dasharray="5 3"/>
+        <text x="170" y="213" text-anchor="middle" font-size="11" font-weight="700" fill="#9F3412">Wolf Statue</text>
+        <text x="170" y="228" text-anchor="middle" font-size="10" fill="#9F3412">→ Fear (dead end)</text>
+
+        <rect x="250" y="195" width="110" height="44" rx="8" fill="#FEE2E2" stroke="#9F3412" stroke-width="1" stroke-dasharray="5 3"/>
+        <text x="305" y="213" text-anchor="middle" font-size="11" font-weight="700" fill="#9F3412">Goats Fear Wolves</text>
+        <text x="305" y="228" text-anchor="middle" font-size="10" fill="#9F3412">leads nowhere</text>
+
+        <line x1="170" y1="150" x2="170" y2="193" stroke="#9F3412" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr3-muted)"/>
+        <line x1="242" y1="150" x2="262" y2="193" stroke="#9F3412" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr3-muted)"/>
+
+        <!-- forget() label -->
+        <rect x="390" y="200" width="130" height="38" rx="6" fill="#FEE2E2" stroke="#9F3412" stroke-width="1"/>
+        <text x="455" y="217" text-anchor="middle" font-size="11" font-weight="700" fill="#9F3412">forget(wolf, fear)</text>
+        <text x="455" y="231" text-anchor="middle" font-size="10" fill="#9F3412">removes dead-end nodes</text>
+
+        <!-- Labels -->
+        <text x="30" y="30" font-size="12" fill="#0F766E" font-weight="700">Escape chain (surfaced by recall("how do I escape?")):</text>
+        <text x="30" y="175" font-size="12" fill="#9F3412" font-weight="700">Red herrings (candidate for forget()):</text>
+      </svg>
+      <figcaption>Fig 3 — Cognee builds the graph from all examined clues. recall() traverses it to surface the Moon → Waterfall → Blue Door → Exit chain. No single clue contains this answer.</figcaption>
+    </figure>
+  </div>
+</section>
+
+
+<!-- ===== 6. PUZZLE DESIGN RULES ===== -->
+<section>
+  <h2>6. Puzzle Design Rules</h2>
+  <p>These rules exist to ensure Cognee's graph traversal is genuinely necessary — not decorative.</p>
+
+  <ol>
+    <li><strong>No single clue is the answer.</strong> The escape path must require connecting at least 3 artifacts. If a player can escape by reading one inscription, Cognee added nothing.</li>
+    <li><strong>Chains must flow through entities, not just keywords.</strong> Cognee extracts entities (Moon, Waterfall, Door) and relationships (triggers, reveals, opens). Puzzle clues must be written so these relationships are extractable from natural language. Avoid clues that are too abstract.</li>
+    <li><strong>Every room has at least one red herring.</strong> Red herrings must be credible enough to waste an examination slot. Good red herrings connect to real entities but lead to dead ends (e.g., "Wolf points at moonlight" — Moon is real, but the wolf path is a dead end).</li>
+    <li><strong>Recall queries must be guessable.</strong> Players should be able to intuit what question to ask. The game must give enough visual hints ("try asking about what connects things" or showing example queries). The puzzle should never be impossible to query out of.</li>
+    <li><strong>Rooms unlock progressively.</strong> Later rooms require chains from earlier rooms to unlock, creating dependency and replay of earlier knowledge.</li>
+  </ol>
+
+  <div class="callout">
+    <div class="callout-label">Open item</div>
+    <p>How many rooms? 3 feels right for a hackathon demo (tutorial, mid, hard). Room count affects total puzzle design time. We need to spec all rooms before building to avoid mid-build redesign.</p>
+  </div>
+</section>
+
+
+<!-- ===== 7. TECHNICAL ARCHITECTURE ===== -->
+<section>
+  <h2>7. Technical Architecture</h2>
+
+  <div class="arch-stack">
+    <div class="arch-layer frontend">
+      <div>
+        <div class="layer-label">Frontend</div>
+        <div class="layer-detail">React (or vanilla JS) — cave room UI, timer display, examine/ask/dismiss controls, chain visualization</div>
+      </div>
+      <code>Port 3000</code>
+    </div>
+    <div class="arch-layer backend">
+      <div>
+        <div class="layer-label">Backend API</div>
+        <div class="layer-detail">FastAPI (Python) — wraps Cognee SDK, manages sessions, exposes /examine, /ask, /dismiss endpoints</div>
+      </div>
+      <code>Port 8000</code>
+    </div>
+    <div class="arch-layer cognee">
+      <div>
+        <div class="layer-label">Cognee SDK</div>
+        <div class="layer-detail">remember() / recall() / forget() — graph-vector hybrid store, persists across LLM sessions</div>
+      </div>
+      <code>cognee==1.x</code>
+    </div>
+    <div class="arch-layer llm">
+      <div>
+        <div class="layer-label">LLM</div>
+        <div class="layer-detail">Used by Cognee for entity extraction on ingest, and for narrating what the goat perceives on examine</div>
+      </div>
+      <code>claude-sonnet-4-6</code>
+    </div>
+  </div>
+
+  <h3>Key API Endpoints</h3>
+  <table class="data-table">
+    <thead>
+      <tr><th>Endpoint</th><th>Action</th><th>Cognee call</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>POST /examine</code></td><td>Player examines an artifact</td><td><code>cognee.remember(clue_text)</code></td></tr>
+      <tr><td><code>POST /ask</code></td><td>Player submits a natural language question</td><td><code>cognee.recall(query)</code></td></tr>
+      <tr><td><code>POST /dismiss</code></td><td>Player dismisses a red herring</td><td><code>cognee.forget(artifact_id)</code></td></tr>
+      <tr><td><code>GET /session/reset</code></td><td>Timer resets, new LLM session begins</td><td>New session context; Cognee graph unchanged</td></tr>
+      <tr><td><code>GET /graph/status</code></td><td>Current known nodes (for debug/admin view)</td><td><code>cognee.recall("what do I know?")</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <div class="callout-label">Open item</div>
+    <p>Which LLM provider? Cognee supports multiple. Claude is the cleanest integration with Claude Code (relevant for the hackathon judges). Do we use Cognee Cloud (free dev plan available with code COGNEE-35) or self-hosted? Cloud is easier for demo; self-hosted scores better on the "Best Use of Open Source" track.</p>
+  </div>
+
+  <div class="callout">
+    <div class="callout-label">Open item</div>
+    <p>Session management: how do we scope Cognee's graph per game instance? If two players play simultaneously, their graphs must not mix. Cognee's multi-user mode (user_id scoping) handles this — needs to be implemented from the start.</p>
+  </div>
+</section>
+
+
+<!-- ===== 8. UI SKETCH ===== -->
+<section>
+  <h2>8. UI Layout Sketch</h2>
+
+  <div class="diagram-wrap">
+    <figure>
+      <svg width="100%" viewBox="0 0 740 400" xmlns="http://www.w3.org/2000/svg">
+        <!-- Outer frame -->
+        <rect x="10" y="10" width="720" height="380" rx="10" fill="#1C1917" stroke="#3D3935" stroke-width="1.5"/>
+
+        <!-- Header bar -->
+        <rect x="10" y="10" width="720" height="44" rx="10" fill="#2A2725"/>
+        <rect x="10" y="42" width="720" height="12" fill="#2A2725"/>
+        <text x="30" y="37" font-size="13" font-weight="700" fill="#FEF3C7">🐐 MemGoat: Cave Escape</text>
+
+        <!-- Timer -->
+        <rect x="560" y="18" width="80" height="28" rx="6" fill="#92400E"/>
+        <text x="600" y="36" text-anchor="middle" font-size="14" font-weight="700" fill="#FEF3C7">⏱ 1:43</text>
+
+        <!-- Examine slots -->
+        <text x="658" y="28" text-anchor="middle" font-size="10" fill="#A8A29E">SLOTS</text>
+        <circle cx="648" cy="38" r="6" fill="#0F766E"/>
+        <circle cx="661" cy="38" r="6" fill="#0F766E"/>
+        <circle cx="674" cy="38" r="6" fill="#3D3935"/>
+
+        <!-- Cave room (left panel) -->
+        <rect x="20" y="62" width="420" height="320" rx="6" fill="#242120"/>
+        <text x="230" y="90" text-anchor="middle" font-size="11" fill="#78716C">ROOM 2 — THE MOONLIT CHAMBER</text>
+
+        <!-- Artifacts in the room -->
+        <!-- Stone tablet -->
+        <rect x="50" y="210" width="80" height="60" rx="4" fill="#3D3935" stroke="#57534E" stroke-width="1"/>
+        <text x="90" y="237" text-anchor="middle" font-size="10" fill="#A8A29E">Stone</text>
+        <text x="90" y="251" text-anchor="middle" font-size="10" fill="#A8A29E">Tablet</text>
+        <rect x="60" y="258" width="60" height="18" rx="3" fill="#0F766E"/>
+        <text x="90" y="271" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">Examine</text>
+
+        <!-- Cave wall -->
+        <rect x="200" y="140" width="80" height="60" rx="4" fill="#3D3935" stroke="#57534E" stroke-width="1"/>
+        <text x="240" y="166" text-anchor="middle" font-size="10" fill="#A8A29E">Cave</text>
+        <text x="240" y="180" text-anchor="middle" font-size="10" fill="#A8A29E">Wall</text>
+        <rect x="210" y="188" width="60" height="18" rx="3" fill="#0F766E"/>
+        <text x="240" y="201" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">Examine</text>
+
+        <!-- Painting (red herring) -->
+        <rect x="310" y="180" width="80" height="60" rx="4" fill="#3D3935" stroke="#9F3412" stroke-width="1" stroke-dasharray="4 2"/>
+        <text x="350" y="206" text-anchor="middle" font-size="10" fill="#A8A29E">Old</text>
+        <text x="350" y="220" text-anchor="middle" font-size="10" fill="#A8A29E">Painting</text>
+        <rect x="320" y="228" width="60" height="18" rx="3" fill="#0F766E"/>
+        <text x="350" y="241" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">Examine</text>
+
+        <!-- Goat character -->
+        <circle cx="160" cy="280" r="18" fill="#FEF3C7"/>
+        <text x="160" y="285" text-anchor="middle" font-size="18">🐐</text>
+        <text x="160" y="308" text-anchor="middle" font-size="9" fill="#78716C">YOU ARE HERE</text>
+
+        <!-- Right panel: Cognee interface -->
+        <rect x="448" y="62" width="282" height="320" rx="6" fill="#1A1917"/>
+        <text x="589" y="86" text-anchor="middle" font-size="11" fill="#78716C">CAVE MEMORY</text>
+
+        <!-- Chain visualization -->
+        <rect x="458" y="96" width="262" height="80" rx="6" fill="#242120"/>
+        <text x="461" y="112" font-size="9" fill="#A8A29E">LAST RECALL RESULT:</text>
+
+        <!-- mini chain -->
+        <rect x="462" y="120" width="44" height="22" rx="11" fill="#F59E0B"/>
+        <text x="484" y="134" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">Moon</text>
+        <line x1="507" y1="131" x2="520" y2="131" stroke="#0F766E" stroke-width="1.5" marker-end="url(#arr3)"/>
+        <rect x="522" y="120" width="60" height="22" rx="11" fill="#185FA5"/>
+        <text x="552" y="134" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">Waterfall</text>
+        <line x1="583" y1="131" x2="596" y2="131" stroke="#0F766E" stroke-width="1.5" marker-end="url(#arr3)"/>
+        <rect x="598" y="120" width="60" height="22" rx="11" fill="#5B21B6"/>
+        <text x="628" y="134" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">Blue Door</text>
+        <text x="589" y="160" text-anchor="middle" font-size="9" fill="#A8A29E">3 clues connected · chain length 3</text>
+
+        <!-- Query input -->
+        <rect x="458" y="188" width="262" height="36" rx="6" fill="#2A2725" stroke="#3D3935" stroke-width="1"/>
+        <text x="474" y="210" font-size="11" fill="#78716C">Ask the cave anything…</text>
+
+        <!-- Submit button -->
+        <rect x="638" y="193" width="72" height="26" rx="5" fill="#5B21B6"/>
+        <text x="674" y="210" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">Ask ↗</text>
+
+        <!-- Dismiss area -->
+        <rect x="458" y="238" width="262" height="60" rx="6" fill="#242120"/>
+        <text x="461" y="254" font-size="9" fill="#A8A29E">LAST EXAMINED:</text>
+        <rect x="462" y="260" width="160" height="26" rx="4" fill="#2A2725"/>
+        <text x="542" y="277" text-anchor="middle" font-size="10" fill="#FEF3C7">"Goats fear wolves"</text>
+        <rect x="630" y="260" width="80" height="26" rx="4" fill="#7F1D1D" stroke="#9F3412" stroke-width="1"/>
+        <text x="670" y="277" text-anchor="middle" font-size="9" font-weight="700" fill="#FCA5A5">Dismiss 🗑</text>
+
+        <!-- Session log -->
+        <rect x="458" y="310" width="262" height="64" rx="6" fill="#242120"/>
+        <text x="461" y="326" font-size="9" fill="#A8A29E">SESSION LOG:</text>
+        <text x="461" y="342" font-size="10" fill="#78716C">Session 3 of ∞  ·  Graph: 4 nodes, 3 edges</text>
+        <text x="461" y="358" font-size="10" fill="#0F766E">✓ Stone tablet · ✓ Cave wall · ✗ Painting</text>
+        <text x="461" y="370" font-size="10" fill="#A8A29E">Awaiting: Crumbling note (not examined yet)</text>
+      </svg>
+      <figcaption>Fig 4 — Rough UI layout. Left panel: cave room with moveable goat and artifact interaction. Right panel: Cognee interface with chain visualization, query input, dismiss action, and session log.</figcaption>
+    </figure>
+  </div>
+
+  <div class="callout">
+    <div class="callout-label">Open item</div>
+    <p>Does the cave use a 2D top-down view or a first-person text-adventure style? Top-down is more visual and better for demos. Text-adventure is faster to build. Needs a team decision before frontend work starts.</p>
+  </div>
+</section>
+
+
+<!-- ===== 9. OPEN ITEMS ===== -->
+<section>
+  <h2>9. Open Items &amp; Decisions Needed</h2>
+  <p>These need to be resolved before or early in the build. Ranked by urgency.</p>
+
+  <div class="open-items">
+
+    <div class="open-item">
+      <div class="open-item-number">1</div>
+      <div>
+        <strong>What do we call the Cognee layer in-game?</strong>
+        <p>It should not be called "Cognee" in the game. Options: "The Cave Echo," "Ancient Memory," "Deep Instinct," "The Stone Mind." Affects all UI copy, narration, and the README story. Decide early — it propagates everywhere.</p>
+      </div>
+    </div>
+
+    <div class="open-item">
+      <div class="open-item-number">2</div>
+      <div>
+        <strong>How many rooms, and what are the full puzzle chains?</strong>
+        <p>We need room specs before building: each room's artifacts, which are real clues, which are red herrings, and what the escape chain is. Suggested: Room 1 (tutorial, 2-node chain), Room 2 (3-node chain), Room 3 (4-node chain with one active red herring to dismiss). Must be authored with care so Cognee extracts the right entities.</p>
+      </div>
+    </div>
+
+    <div class="open-item">
+      <div class="open-item-number">3</div>
+      <div>
+        <strong>Cognee Cloud vs. self-hosted?</strong>
+        <p>Cloud (free dev plan with code COGNEE-35) is faster to set up. Self-hosted scores on the "Best Use of Open Source" prize track. Decide based on which prize track we're targeting.</p>
+      </div>
+    </div>
+
+    <div class="open-item">
+      <div class="open-item-number">4</div>
+      <div>
+        <strong>Cave UI style: top-down 2D or text-adventure?</strong>
+        <p>Top-down 2D is more visually impressive for demos but requires more frontend work. Text-adventure is buildable in a day and lets us focus on the Cognee layer. Given the hackathon timeline (7 days), text-adventure is lower risk.</p>
+      </div>
+    </div>
+
+    <div class="open-item">
+      <div class="open-item-number">5</div>
+      <div>
+        <strong>How does recall() return data to the frontend?</strong>
+        <p>Cognee's recall() returns structured graph data (nodes + edges) or prose? We need to decide if we render the chain as a visual node graph (more impressive, harder) or as a formatted text answer (simpler). Chain visualization is the better demo but requires a graph rendering library (e.g., D3 or React Flow).</p>
+      </div>
+    </div>
+
+    <div class="open-item">
+      <div class="open-item-number">6</div>
+      <div>
+        <strong>What happens if the player never uses dismiss()?</strong>
+        <p>If red herrings stay in the graph, recall() might return polluted chains. Is that intentional friction? Or do we need to design puzzles where red herrings don't block the escape chain? Test this during early integration.</p>
+      </div>
+    </div>
+
+    <div class="open-item">
+      <div class="open-item-number">7</div>
+      <div>
+        <strong>Examine slot count per session (currently: 3). Is that right?</strong>
+        <p>Needs playtesting. 3 is a guess. If the goat needs to cross rooms to reach artifacts, 3 might be too few to make meaningful progress per session. Could also vary by room difficulty.</p>
+      </div>
+    </div>
+
+    <div class="open-item">
+      <div class="open-item-number">8</div>
+      <div>
+        <strong>Multi-player / multi-instance isolation</strong>
+        <p>Cognee's graph must be scoped per game session. Cognee supports multi-user mode with user_id scoping. This must be implemented from day one — retrofitting is painful.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  MemGoat: Cave Escape · Design Document v0.1 · WeMakeDevs × Cognee Hackathon · Jun 2026<br>
+  Share with team. All open items need resolution before build starts.
+</footer>
+
+</body>
+</html>
