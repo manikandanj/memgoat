@@ -3,67 +3,157 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Goat of the Witch-Cave</title>
+  <title>Goat of the Witch-Cave — Prototype</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <div class="intro-overlay" id="introOverlay">
+    <div class="intro-card">
+      <p class="eyebrow">Plot screen</p>
+      <h1>Goat of the Witch-Cave</h1>
+      <p class="intro-lead">You wake inside a witch-worked ruin with your short-term memory collapsing every two minutes.</p>
+      <p>
+        You do <strong>not</strong> see yourself. The story is told from your point of view. The cave remembers what you forget.
+        Your job is to inspect the room, collect fragments, and <strong>weave true connections</strong> before the memory tide resets.
+      </p>
+      <div class="intro-grid">
+        <div>
+          <h3>Core mechanic</h3>
+          <p>Found clues are temporary. Solved deductions become <strong>Memory Knots</strong> that survive resets and unlock progress.</p>
+        </div>
+        <div>
+          <h3>Prototype goal</h3>
+          <p>Recover the name hidden in the wall, understand the ritual, and use the cold blue draft to open an escape route.</p>
+        </div>
+        <div>
+          <h3>Controls</h3>
+          <p>Hover objects to highlight them. Click to inspect. Open the Clue Box to weave connections. Ask the Cave Voice for hints.</p>
+        </div>
+        <div>
+          <h3>Audio ready</h3>
+          <p>This build includes music / SFX hooks. Drop your own files into <code>assets/audio/</code> later without changing the core structure.</p>
+        </div>
+      </div>
+      <div class="intro-actions">
+        <button class="stone-btn large" id="startBtn">Enter the cave</button>
+      </div>
+    </div>
+  </div>
+
   <main class="game-shell">
     <section class="viewport" id="viewport">
       <div class="cave-bg"></div>
       <div class="mist mist-a"></div>
       <div class="mist mist-b"></div>
+      <div class="mist mist-c"></div>
 
       <header class="hud top-hud">
-        <button class="stone-btn" id="cluesBtn">Clue Box</button>
-        <div class="timer-wrap">
-          <span class="timer-label">Memory tide</span>
-          <span class="timer" id="timer">02:00</span>
+        <div class="left-tools">
+          <button class="stone-btn" id="plotBtn">Plot</button>
+          <button class="stone-btn" id="cluesBtn">Clue Box</button>
+          <button class="stone-btn" id="voiceBtn">Cave Voice</button>
         </div>
-        <button class="stone-btn cave-voice-btn" id="voiceBtn">Cave Voice</button>
+        <div class="center-tools">
+          <div class="timer-wrap" id="timerWrap">
+            <span class="timer-label">Memory tide</span>
+            <span class="timer" id="timer">02:00</span>
+          </div>
+          <div class="progress-wrap">
+            <span class="progress-label">Memory knots</span>
+            <span class="progress-value" id="progressValue">0 / 4</span>
+          </div>
+        </div>
+        <div class="right-tools">
+          <button class="stone-btn iconish" id="musicBtn" title="Audio placeholder toggle">Music: Off</button>
+          <button class="stone-btn iconish" id="sfxBtn" title="SFX placeholder toggle">SFX: On</button>
+        </div>
       </header>
 
-      <button class="look-arrow look-left" id="leftBtn" aria-label="Look left">
-        <span>←</span>
-      </button>
-      <button class="look-arrow look-right" id="rightBtn" aria-label="Look right">
-        <span>→</span>
-      </button>
+      <div class="room-title" id="roomTitle">Shard Hollow</div>
+      <div class="room-subtitle" id="roomSubtitle">The witch kept her ritual scraps here. A blue seam of daylight wounds the stone.</div>
 
-      <div class="room-title" id="roomTitle">The Brine Cell</div>
-      <div class="room-subtitle" id="roomSubtitle">A witch's first cage. The air tastes like rust and old rain.</div>
-
-      <div class="goat" title="You, unfortunately. Proud horns. Questionable knees.">
-        <div class="horn horn-left"></div>
-        <div class="horn horn-right"></div>
-        <div class="goat-head"></div>
-        <div class="goat-beard"></div>
+      <div class="goal-strip">
+        <div class="goal-title">Current goal</div>
+        <p id="goalText">Inspect the room and recover enough clue fragments to weave your first Memory Knot.</p>
       </div>
 
       <div class="scene-items" id="sceneItems"></div>
 
       <div class="textbox" id="textbox">
-        <div class="speaker">Goat mind</div>
-        <p id="narration">My hooves remember the floor, but my head keeps getting swept clean. Two minutes. The cave breathes, and then it steals.</p>
+        <div class="speaker">First-person narration</div>
+        <p id="narration">The chamber knows me better than I know myself. I have two minutes before the cave rinses my head clean again.</p>
       </div>
     </section>
   </main>
 
+  <dialog class="panel inspect-panel" id="inspectDialog">
+    <button class="close-btn top-right" id="closeInspect" aria-label="Close">×</button>
+    <div class="inspect-grid">
+      <div class="inspect-art-wrap">
+        <img id="inspectImage" class="inspect-art" alt="Selected clue art" />
+      </div>
+      <div class="inspect-copy">
+        <p class="eyebrow" id="inspectType">Clue</p>
+        <h2 id="inspectTitle">Object</h2>
+        <p class="inspect-blurb" id="inspectBlurb"></p>
+        <div class="inspect-sections">
+          <section>
+            <h3>Observation</h3>
+            <p id="inspectObservation"></p>
+          </section>
+          <section>
+            <h3>Why it matters</h3>
+            <p id="inspectClue"></p>
+          </section>
+        </div>
+        <div class="inspect-tags" id="inspectTags"></div>
+        <div class="inspect-actions">
+          <button class="stone-btn" id="rememberBtn">Commit to memory</button>
+          <button class="stone-btn secondary" id="actBtn" hidden>Perform action</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
   <dialog class="panel clue-panel" id="clueDialog">
     <div class="panel-top">
-      <h2>Clue Box</h2>
+      <div>
+        <h2>Clue Box</h2>
+        <p>Temporary fragments vanish on reset. Woven Memory Knots stay etched.</p>
+      </div>
       <button class="close-btn" id="closeClues">×</button>
     </div>
-    <p class="panel-note">When the timer resets, this slate is wiped. The cave is petty like that.</p>
-    <div class="split-grid">
+    <div class="memory-summary">
+      <div class="summary-card">
+        <span>Current fragments</span>
+        <strong id="fragmentCount">0</strong>
+      </div>
+      <div class="summary-card">
+        <span>Memory knots</span>
+        <strong id="knotCount">0</strong>
+      </div>
+      <div class="summary-card">
+        <span>Prototype state</span>
+        <strong id="stateValue">Searching</strong>
+      </div>
+    </div>
+    <div class="split-grid wide">
       <section>
-        <h3>Clues found</h3>
+        <h3>Remembered now</h3>
         <ul class="clue-list" id="clueList"></ul>
       </section>
       <section>
-        <h3>Connections</h3>
+        <h3>Memory knots (persistent)</h3>
         <ul class="clue-list" id="connectionList"></ul>
       </section>
     </div>
+    <section class="threads-section">
+      <div class="section-heading">
+        <h3>Available threads</h3>
+        <p>Weave the right clues together to create deductions that survive the timer.</p>
+      </div>
+      <div class="thread-grid" id="threadGrid"></div>
+    </section>
   </dialog>
 
   <aside class="voice-panel" id="voicePanel" aria-hidden="true">
@@ -75,15 +165,27 @@
       <button class="close-btn" id="closeVoice">×</button>
     </div>
     <div class="chat-log" id="chatLog">
-      <div class="bubble cave">Ask what the room forgot. I will answer in echoes, not maps.</div>
+      <div class="bubble cave">Ask about what you’ve seen, what you’re missing, or how to leave. I prefer riddles, but I can be practical when bullied.</div>
     </div>
     <form class="chat-form" id="chatForm">
-      <input id="chatInput" type="text" autocomplete="off" placeholder="Ask the cave what you knew before..." />
+      <input id="chatInput" type="text" autocomplete="off" placeholder="Ask the cave what you forgot..." />
       <button type="submit">Ask</button>
     </form>
   </aside>
 
+  <div class="ending-overlay" id="endingOverlay" hidden>
+    <div class="ending-card">
+      <p class="eyebrow">Prototype complete</p>
+      <h2>The passage opens</h2>
+      <p id="endingText">The name returns. The wall gives way. Cold daylight stops being a rumor.</p>
+      <button class="stone-btn" id="restartBtn">Restart prototype</button>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
+  <audio id="bgMusic" loop preload="none">
+    <source src="assets/audio/ambient-cave.mp3" type="audio/mpeg" />
+  </audio>
   <script src="script.js"></script>
 </body>
 </html>
