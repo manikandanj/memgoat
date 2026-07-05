@@ -1,48 +1,33 @@
-# Goat of the Witch-Cave — Static Prototype
+# MemGoat Static UI
 
-This updated prototype is built as a replaceable-asset, static HTML/CSS/JS demo.
+This UI keeps the new cave presentation and asset style, but the game state now comes from the FastAPI backend.
 
-## What changed
-- Scene assets now render directly in-world with low-opacity blending and only visibly stand out on hover.
-- First-person narration focus (the goat is **not** rendered on screen).
-- A plot / intro screen before play begins.
-- A stronger room theme based on the dark ritual-cave references.
-- Hover-highlighted clickable hotspots over the environment.
-- Inspect popup for every clickable object, with description and clue text.
-- More clues and a clearer deduction system.
-- A new mechanic: **Memory Knots**.
-  - Click objects to collect temporary clue fragments.
-  - Open **Clue Box** and weave available clue threads into persistent deductions.
-  - Temporary clues reset every 2 minutes.
-  - Solved deductions persist through resets and unlock progress.
-- Cave Voice hint panel.
-- Audio hooks for future ambient music / SFX.
+## Runtime Contract
 
-## Replaceable asset structure
-Swap these files freely without breaking core logic:
-- `assets/bg_shard_hollow.png`
-- `assets/clue_ritual_bowl.png`
-- `assets/clue_eye_shard.png`
-- `assets/clue_scratch_marks.png`
-- `assets/clue_kael_niche.png`
-- `assets/clue_blue_fissure.png`
-- `assets/clue_ash_ring.png`
-- `assets/clue_ward_cloth.png`
+- `POST /api/sessions` opens a backend session.
+- `GET /api/sessions/{id}/room` drives room title, summary, hotspots, exits, and sealed-room state.
+- `POST /api/sessions/{id}/objects/{object_id}/inspect` loads inspection text and candidate memories.
+- `POST /api/sessions/{id}/memories/commit` commits the chosen Echo memory.
+- `POST /api/sessions/{id}/rooms/{room_id}/exit` advances when required memories are present.
+- `POST /api/sessions/{id}/reset` handles the memory tide.
+- `POST /api/sessions/{id}/echo/ask` powers Cave Voice answers.
 
-## Add audio later
-Optional:
-- add `assets/audio/ambient-cave.mp3`
-- you can also wire more SFX inside `script.js`
+## Local Use
 
-## Prototype flow
-1. Enter the cave.
-2. Inspect highlighted objects.
-3. Commit clues to short-term memory.
-4. Open Clue Box.
-5. Weave valid clue threads into persistent Memory Knots.
-6. Use deductions to reveal the hidden name niche and then the final escape passage.
+Start the backend on `127.0.0.1:8000`, then serve this folder as static files on `127.0.0.1:5173`.
 
-## Notes
-- This is structured as a **prototype room** with scalable logic.
-- You can add more rooms later by extending the data in `script.js`.
-- The popup / hotspot / clue-thread system is already organized to be asset-replaceable.
+```powershell
+cd backend
+$env:MEMGOAT_MEMORY_PROVIDER = "mock"
+$env:MEMGOAT_DEMO_MODE = "false"
+.\.venv\Scripts\python.exe -B -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+```powershell
+cd ui
+python -m http.server 5173 --bind 127.0.0.1
+```
+
+Open `http://127.0.0.1:5173`.
+
+To point the UI at a different API server, set `window.MEMGOAT_API_BASE` before loading `script.js`.

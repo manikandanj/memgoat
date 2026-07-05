@@ -1,165 +1,49 @@
+const API_BASE = window.MEMGOAT_API_BASE || 'http://127.0.0.1:8000';
 
-const GAME = {
-  room: {
-    id: 'shard-hollow',
-    title: 'Shard Hollow',
-    subtitle: 'The witch kept her ritual scraps here. A blue seam of daylight wounds the stone.',
-    goal: 'Inspect the room and recover enough clue fragments to weave your first Memory Knot.',
-    narration: 'The chamber knows me better than I know myself. I have two minutes before the cave rinses my head clean again.',
-    hotspots: [
-      {
-        id: 'ritual-bowl',
-        label: 'Cracked ritual bowl',
-        type: 'clue',
-        image: 'assets/clue_ritual_bowl.png',
-        x: 28, y: 47, w: 12, h: 14, radius: '14px',
-        blurb: 'A broken vessel set near the ritual ring, as if it once collected something more important than water.',
-        observation: 'Three black stones are wedged into the crack as if someone repaired the bowl just enough to keep using it. Dark residue clings to the inside.',
-        clue: 'This bowl was part of the cave’s ritual apparatus. It was built to hold memories or offerings, not food.',
-        tags: ['ritual', 'vessel', 'residue'],
-        narration: 'The bowl is too carefully mended to be trash. Someone needed it functional, even in pieces.'
-      },
-      {
-        id: 'eye-shard',
-        label: 'Reflective bowl shard',
-        type: 'clue',
-        image: 'assets/clue_eye_shard.png',
-        x: 44, y: 67, w: 7.5, h: 9, radius: '18px',
-        blurb: 'A pale fragment on the floor flashes with a reflection that should not exist.',
-        observation: 'When I angle the shard, a human eye stares back from its surface. Not mine. Or not only mine.',
-        clue: 'One broken shard retains a trapped witness-memory. The ritual didn’t just break objects — it stored identity.',
-        tags: ['memory', 'witness', 'shard'],
-        narration: 'The shard looks back. That is worse than a normal piece of pottery.'
-      },
-      {
-        id: 'scratch-marks',
-        label: 'Counting scratches',
-        type: 'clue',
-        image: 'assets/clue_scratch_marks.png',
-        x: 36.4, y: 25.5, w: 10.5, h: 17, radius: '10px',
-        blurb: 'Deep gouges cut the back wall in a deliberate set.',
-        observation: 'There are four marks, but only the third is deeper and cleaner — more sign than damage.',
-        clue: 'The scratches are a coded count. The third mark is the one meant to be followed.',
-        tags: ['count', 'marking', 'wall'],
-        narration: 'Not random panic-scratches. Too neat. Too pointed. Someone counted on this wall surviving longer than memory.'
-      },
-      {
-        id: 'ward-cloth',
-        label: 'Torn ward strip',
-        type: 'clue',
-        image: 'assets/clue_ward_cloth.png',
-        x: 43, y: 32, w: 5, h: 16, radius: '12px',
-        blurb: 'A dark strip of cloth hangs from the stone like a dead tongue.',
-        observation: 'The cloth is tied directly beside the scratched section of wall. It feels less decorative than directional.',
-        clue: 'The hanging strip was left as a marker, drawing attention to the same section of wall as the scratch-count.',
-        tags: ['marker', 'cloth', 'wall'],
-        narration: 'The cloth points without pointing. The room keeps repeating the same instruction.'
-      },
-      {
-        id: 'loose-bricks',
-        label: 'Loose bricks',
-        type: 'clue',
-        image: 'assets/bricks.png',
-        x: 10.2, y: 22.8, w: 11.8, h: 22, radius: '12px',
-        blurb: 'The left wall doesn’t quite trust its own structure.',
-        observation: 'Several bricks have been disturbed, but one cluster feels more deliberate than collapsed. A cool breath leaks through it.',
-        clue: 'A hidden opening sits behind the weakened masonry. The right brick to pry will probably be the third one.',
-        tags: ['brick', 'hidden', 'draft'],
-        narration: 'The wall breathes. That is either a good sign or a terrible architectural opinion.'
-      },
-      {
-        id: 'ash-ring',
-        label: 'Ash circle',
-        type: 'clue',
-        image: 'assets/clue_ash_ring.png',
-        x: 25, y: 47, w: 20, h: 18, radius: '50%',
-        blurb: 'The center ring is blackened, but not from simple candle smoke.',
-        observation: 'Ash, powdered bone, and wax were pressed into the stone circle. The residue radiates inward, as if something was drained toward the middle.',
-        clue: 'The ritual ring was used to pull memory inward and trap it in a vessel. This chamber was an extraction site.',
-        tags: ['ritual', 'ash', 'drain'],
-        narration: 'This wasn’t worship. It was processing.'
-      },
-      {
-        id: 'blue-fissure',
-        label: 'Blue fissure',
-        type: 'clue',
-        image: 'assets/clue_blue_fissure.png',
-        x: 6.8, y: 19.5, w: 8.6, h: 26, radius: '10px',
-        blurb: 'Cold light leaks in through the broken masonry.',
-        observation: 'Mist curls from the crack with the smell of wet stone and outside air. The opening is narrow, but real.',
-        clue: 'The blue draft comes from a genuine exit route or near-surface passage beyond the wall.',
-        tags: ['exit', 'draft', 'blue light'],
-        narration: 'Real air. Real cold. The best thing I have found in this cave is a draft.'
-      },
-      {
-        id: 'kael-niche',
-        label: 'Hidden name niche',
-        type: 'clue',
-        image: 'assets/clue_kael_niche.png',
-        x: 14, y: 25, w: 13, h: 20, radius: '12px',
-        hidden: true,
-        blurb: 'Behind the pried stones, a recess holds a name the cave did not manage to erase.',
-        observation: 'The niche is carved with one clean word: KAEL. Not a warning. A name. Perhaps mine.',
-        clue: 'The hidden wall cavity preserves the name KAEL. Recovering the name stabilizes identity and weakens the cave’s reset.',
-        tags: ['name', 'identity', 'hidden'],
-        narration: 'KAEL. The word lands in my skull like a stone finding its proper slot.'
-      },
-      {
-        id: 'exit-passage',
-        label: 'Widened passage',
-        type: 'action',
-        image: 'assets/clue_blue_fissure.png',
-        x: 6.8, y: 19.5, w: 10, h: 28, radius: '10px',
-        hidden: true,
-        finalTarget: true,
-        blurb: 'The weakened wall can now be forced open.',
-        observation: 'With the name restored and the route understood, the draft no longer feels like a rumor. The crack is ready to become a passage.',
-        clue: 'Push through the fissure and leave the chamber.',
-        tags: ['exit', 'escape'],
-        actionLabel: 'Open passage',
-        actionKey: 'escape',
-        narration: 'I know what this chamber did, who it tried to erase, and where the air is coming from. That is enough. It has to be enough.'
-      }
-    ],
-    threads: [
-      {
-        id: 'counted-warning',
-        title: 'Counted Warning',
-        description: 'The back-wall scratches and ward strip both indicate a deliberate count. They point to the third disturbed brick.',
-        needs: ['scratch-marks', 'ward-cloth', 'loose-bricks'],
-        result: 'I now know exactly which brick cluster should be pried apart.',
-        unlocksHotspot: 'kael-niche',
-        stateLabel: 'Unlocks hidden niche'
-      },
-      {
-        id: 'ritual-function',
-        title: 'Memory Vessel',
-        description: 'The bowl, ash ring, and reflective shard reveal the ritual’s purpose: memories were drained and stored, not merely destroyed.',
-        needs: ['ritual-bowl', 'ash-ring', 'eye-shard'],
-        result: 'The chamber was used to extract memory and trap identity in a vessel.',
-        stateLabel: 'Persists through resets'
-      },
-      {
-        id: 'buried-identity',
-        title: 'Buried Identity',
-        description: 'Once the niche is found, the preserved name connects to the ritual evidence. The cave erased a person, but failed to erase the anchor completely.',
-        needs: ['kael-niche', 'ritual-bowl', 'eye-shard'],
-        result: 'KAEL is the identity tied to this chamber. Speaking or accepting the name stabilizes memory.',
-        stateLabel: 'Stabilizes identity'
-      },
-      {
-        id: 'way-out',
-        title: 'Way Out',
-        description: 'The blue fissure is not just air. Combined with the restored identity and the hidden masonry, it becomes a real route out.',
-        needs: ['blue-fissure', 'loose-bricks', 'kael-niche'],
-        result: 'The blue seam beyond the broken wall is the escape route. The passage can be forced open.',
-        unlocksHotspot: 'exit-passage',
-        stateLabel: 'Unlocks final action'
-      }
-    ]
+const ROOM_SKIN = {
+  'waking-chamber': {
+    title: 'Waking Chamber',
+    subtitle: 'A low stone room where the goat wakes beside a dead lantern and a sealing threshold.',
+    goal: 'Inspect the chamber and choose what the Cave Echo should remember.',
+    bg: 'assets/bg_shard_hollow.png',
+    intro: 'Cold stone. A dead lantern. The cave is already taking pieces of me.',
+    positions: {
+      locket: { x: 28, y: 50, w: 12, h: 14, image: 'assets/clue_eye_shard.png' },
+      dead_lantern: { x: 44, y: 60, w: 12, h: 16, image: 'assets/clue_ritual_bowl.png' },
+      scratched_wall: { x: 65, y: 30, w: 12, h: 18, image: 'assets/clue_scratch_marks.png' }
+    }
   },
-  duration: 120
+  'bell-gallery': {
+    title: 'Bell Gallery',
+    subtitle: 'Bronze bells hang from roots, each etched with a name that almost rings true.',
+    goal: 'Use the Echo-held memories to refine Nara and carry the lantern forward.',
+    bg: 'assets/cave_bg.png',
+    intro: 'The room behind me seals. The bell ahead waits for a name I nearly forgot.',
+    positions: {
+      echo_bell: { x: 28, y: 34, w: 13, h: 18, image: 'assets/clue_blue_fissure.png' },
+      ring_of_names: { x: 45, y: 62, w: 20, h: 15, image: 'assets/clue_ash_ring.png' },
+      lantern_hook: { x: 67, y: 36, w: 11, h: 18, image: 'assets/clue_ward_cloth.png' }
+    }
+  },
+  'root-gate': {
+    title: 'Root Gate',
+    subtitle: 'A door of roots knots around a black mirror pool and a mark that lies beautifully.',
+    goal: 'Commit the final truths, distrust the false memory, and ask the Cave Echo who you are.',
+    bg: 'assets/bg_shard_hollow.png',
+    intro: 'Roots tighten around the gate. Something here wants the wrong story to survive.',
+    positions: {
+      root_gate: { x: 44, y: 25, w: 18, h: 24, image: 'assets/bricks.png' },
+      mirror_pool: { x: 25, y: 62, w: 18, h: 14, image: 'assets/clue_eye_shard.png' },
+      witch_mark: { x: 68, y: 48, w: 12, h: 18, image: 'assets/clue_scratch_marks.png' }
+    }
+  }
 };
+
+const DEFAULT_HOTSPOTS = [
+  { x: 26, y: 52, w: 12, h: 14, image: 'assets/clue_ritual_bowl.png' },
+  { x: 46, y: 56, w: 12, h: 14, image: 'assets/clue_eye_shard.png' },
+  { x: 66, y: 40, w: 12, h: 18, image: 'assets/clue_scratch_marks.png' }
+];
 
 const el = {
   sceneItems: document.getElementById('sceneItems'),
@@ -191,6 +75,7 @@ const el = {
   inspectObservation: document.getElementById('inspectObservation'),
   inspectClue: document.getElementById('inspectClue'),
   inspectTags: document.getElementById('inspectTags'),
+  memoryChoices: document.getElementById('memoryChoices'),
   rememberBtn: document.getElementById('rememberBtn'),
   actBtn: document.getElementById('actBtn'),
   voiceBtn: document.getElementById('voiceBtn'),
@@ -205,170 +90,282 @@ const el = {
   endingOverlay: document.getElementById('endingOverlay'),
   endingText: document.getElementById('endingText'),
   restartBtn: document.getElementById('restartBtn'),
-  bgMusic: document.getElementById('bgMusic')
+  bgMusic: document.getElementById('bgMusic'),
+  caveBg: document.querySelector('.cave-bg')
 };
 
 const state = {
-  discovered: new Set(),
-  solvedThreads: new Set(),
-  unlockedHotspots: new Set(),
+  session: null,
+  room: null,
+  graph: { nodes: [], edges: [], memories: [] },
+  inspection: null,
   selectedHotspot: null,
-  timeLeft: GAME.duration,
+  timeLeft: 120,
   running: false,
   ended: false,
   musicOn: false,
   sfxOn: true,
-  archive: [],
   tickHandle: null
 };
 
-function startGame() {
-  el.introOverlay.classList.add('hidden');
-  resetRun({ full: true });
-  state.running = true;
-  showToast('Hover the room. Click anything suspicious.');
+async function api(path, options = {}) {
+  const response = await fetch(`${API_BASE}${path}`, {
+    ...options,
+    headers: {
+      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+      ...(options.headers || {})
+    }
+  });
+  if (!response.ok) {
+    const detail = await response.json().catch(() => ({ detail: response.statusText }));
+    throw new Error(detail.detail || response.statusText);
+  }
+  return response.json();
 }
 
-function resetRun({ full = false } = {}) {
-  state.discovered.clear();
-  state.solvedThreads.clear();
-  state.unlockedHotspots.clear();
-  state.selectedHotspot = null;
-  state.timeLeft = GAME.duration;
-  state.ended = false;
-  if (full) state.archive = [];
-  el.endingOverlay.hidden = true;
-  el.roomTitle.textContent = GAME.room.title;
-  el.roomSubtitle.textContent = GAME.room.subtitle;
-  el.goalText.textContent = GAME.room.goal;
-  el.narration.textContent = GAME.room.narration;
+async function startGame() {
+  el.introOverlay.classList.add('hidden');
+  await guarded('Opening the cave...', async () => {
+    state.session = await api('/api/sessions', { method: 'POST' });
+    state.timeLeft = state.session.timer_seconds;
+    state.running = true;
+    state.ended = false;
+    await refreshAll();
+    showToast('Session opened. The backend is carrying memory state.');
+  });
+}
+
+async function refreshAll() {
+  if (!state.session) return;
+  const [session, room, graph] = await Promise.all([
+    api(`/api/sessions/${state.session.id}`),
+    api(`/api/sessions/${state.session.id}/room`),
+    api(`/api/sessions/${state.session.id}/echo/graph`)
+  ]);
+  state.session = session;
+  state.room = room;
+  state.graph = graph;
+  state.timeLeft = Math.min(state.timeLeft || session.timer_seconds, session.timer_seconds);
+  renderRoom();
   renderScene();
   renderClueBox();
   updateProgress();
   updateTimer();
 }
 
+function renderRoom() {
+  const skin = getSkin();
+  el.roomTitle.textContent = state.room?.title || skin.title;
+  el.roomSubtitle.textContent = state.room?.summary || skin.subtitle;
+  el.goalText.textContent = goalText();
+  el.narration.textContent = state.room?.goat_context || skin.intro;
+  if (el.caveBg) {
+    el.caveBg.style.backgroundImage = `linear-gradient(rgba(0,0,0,.2), rgba(0,0,0,.52)), url('${skin.bg}')`;
+  }
+}
+
 function renderScene() {
   el.sceneItems.innerHTML = '';
-  GAME.room.hotspots.forEach(h => {
-    const hidden = h.hidden && !state.unlockedHotspots.has(h.id);
-    if (hidden) return;
+  if (!state.room) return;
+  state.room.hotspots.forEach((hotspot, index) => {
+    const visual = getHotspotVisual(hotspot, index);
     const btn = document.createElement('button');
     btn.className = 'hotspot';
-    if (state.discovered.has(h.id)) btn.classList.add('found');
-    if (h.finalTarget) btn.classList.add('final-target');
-    if (isActionReady(h)) btn.classList.add('actionable');
-    btn.style.left = h.x + '%';
-    btn.style.top = h.y + '%';
-    btn.style.width = h.w + '%';
-    btn.style.height = h.h + '%';
-    btn.style.borderRadius = h.radius || '12px';
+    if (hotspot.examined) btn.classList.add('found');
+    btn.style.left = `${visual.x}%`;
+    btn.style.top = `${visual.y}%`;
+    btn.style.width = `${visual.w}%`;
+    btn.style.height = `${visual.h}%`;
+    btn.style.borderRadius = visual.radius || '12px';
     btn.innerHTML = `
       <span class="hotspot-asset-wrap">
-        <img class="hotspot-asset" src="${h.image}" alt="" aria-hidden="true" />
+        <img class="hotspot-asset" src="${visual.image}" alt="" aria-hidden="true" />
       </span>
-      <span class="hotspot-label">${h.label}</span>
-      <span class="hotspot-status">${state.discovered.has(h.id) ? '✓' : '•'}</span>
+      <span class="hotspot-label">${escapeHtml(hotspot.label)}</span>
+      <span class="hotspot-status">${hotspot.examined ? '*' : '.'}</span>
     `;
-    btn.addEventListener('click', () => openInspect(h.id));
+    btn.addEventListener('click', () => openInspect(hotspot.id));
     el.sceneItems.appendChild(btn);
   });
 }
 
-function openInspect(id) {
-  const hotspot = getHotspot(id);
-  state.selectedHotspot = hotspot.id;
-  el.inspectImage.src = hotspot.image;
-  el.inspectTitle.textContent = hotspot.label;
-  el.inspectType.textContent = hotspot.type === 'action' ? 'Action' : 'Clue';
-  el.inspectBlurb.textContent = hotspot.blurb;
-  el.inspectObservation.textContent = hotspot.observation;
-  el.inspectClue.textContent = hotspot.clue;
-  el.inspectTags.innerHTML = hotspot.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
-
-  const already = state.discovered.has(hotspot.id);
-  if (hotspot.type === 'clue') {
+async function openInspect(id) {
+  await guarded('Inspecting object...', async () => {
+    state.selectedHotspot = id;
+    state.inspection = await api(`/api/sessions/${state.session.id}/objects/${id}/inspect`, { method: 'POST' });
+    const hotspot = state.room.hotspots.find(item => item.id === id);
+    const visual = getHotspotVisual(hotspot, state.room.hotspots.indexOf(hotspot));
+    el.inspectImage.src = visual.image;
+    el.inspectTitle.textContent = state.inspection.label;
+    el.inspectType.textContent = hotspot?.kind || 'Cave object';
+    el.inspectBlurb.textContent = state.inspection.prompt;
+    el.inspectObservation.textContent = state.inspection.observation;
+    el.inspectClue.textContent = 'Choose the memory that should survive the next reset.';
+    el.inspectTags.innerHTML = state.inspection.candidates
+      .map(candidate => `<span class="tag">${escapeHtml(candidate.status)} / ${Math.round(candidate.confidence * 100)}%</span>`)
+      .join('');
+    renderMemoryChoices();
     el.rememberBtn.hidden = false;
-    el.rememberBtn.textContent = already ? 'Already remembered' : 'Commit to memory';
-    el.rememberBtn.disabled = already;
-  } else {
-    el.rememberBtn.hidden = true;
-  }
-
-  const actionReady = isActionReady(hotspot);
-  if (actionReady) {
-    el.actBtn.hidden = false;
-    el.actBtn.textContent = hotspot.actionLabel || 'Perform action';
-  } else {
+    el.rememberBtn.disabled = !state.inspection.candidates.length;
+    el.rememberBtn.textContent = 'Commit strongest memory';
     el.actBtn.hidden = true;
-  }
-
-  el.inspectDialog.showModal();
-}
-
-function rememberSelected() {
-  const hotspot = getHotspot(state.selectedHotspot);
-  if (!hotspot || state.discovered.has(hotspot.id)) return;
-  state.discovered.add(hotspot.id);
-  state.archive.push({
-    kind: 'clue',
-    title: hotspot.label,
-    detail: hotspot.clue,
-    time: new Date().toLocaleTimeString()
+    el.inspectDialog.showModal();
   });
-  el.narration.textContent = hotspot.narration;
-  showToast('Clue committed to short memory.');
-  renderScene();
-  renderClueBox();
-  updateProgress();
-  if (state.selectedHotspot === hotspot.id) {
-    el.rememberBtn.textContent = 'Already remembered';
-    el.rememberBtn.disabled = true;
-  }
 }
 
-function isActionReady(hotspot) {
-  if (!hotspot) return false;
-  if (hotspot.actionKey === 'escape') {
-    return state.solvedThreads.has('way-out') && state.solvedThreads.has('buried-identity');
-  }
-  return false;
+function renderMemoryChoices() {
+  el.memoryChoices.innerHTML = '';
+  state.inspection.candidates.forEach(candidate => {
+    const card = document.createElement('article');
+    card.className = 'thread-card';
+    card.innerHTML = `
+      <h4>${escapeHtml(candidate.title)}</h4>
+      <p>${escapeHtml(candidate.text)}</p>
+      <div class="thread-meta">${escapeHtml(candidate.category)} / ${escapeHtml(candidate.status)} / ${Math.round(candidate.confidence * 100)}% confidence</div>
+      <button class="stone-btn" type="button">Commit this memory</button>
+    `;
+    card.querySelector('button').addEventListener('click', () => commitMemory(candidate.id));
+    el.memoryChoices.appendChild(card);
+  });
 }
 
-function runAction() {
-  const hotspot = getHotspot(state.selectedHotspot);
-  if (!hotspot) return;
+async function rememberSelected() {
+  if (!state.inspection?.candidates?.length) return;
+  const best = [...state.inspection.candidates].sort((a, b) => b.confidence - a.confidence)[0];
+  await commitMemory(best.id);
+}
 
-  if (hotspot.id === 'exit-passage' && isActionReady(hotspot)) {
-    state.ended = true;
-    state.running = false;
+async function commitMemory(candidateId) {
+  await guarded('Committing memory...', async () => {
+    await api(`/api/sessions/${state.session.id}/memories/commit`, {
+      method: 'POST',
+      body: JSON.stringify({ object_id: state.inspection.object_id, candidate_id: candidateId })
+    });
     el.inspectDialog.close();
-    el.narration.textContent = 'KAEL. I say the name, shoulder the weakened stone, and the cold slit of daylight becomes a passage wide enough for panic and hope.';
-    el.endingText.textContent = 'You recovered the chamber’s hidden logic, restored the name KAEL, and turned the blue seam of air into a real escape route. This prototype is now set up for more rooms, new assets, music, and sound effects.';
-    el.endingOverlay.hidden = false;
-    showToast('Prototype escape reached.');
+    await refreshAll();
+    showToast('Memory committed to the Cave Echo.');
+  });
+}
+
+async function exitCurrentRoom() {
+  if (!state.room?.exits?.length) return;
+  await guarded('Crossing the threshold...', async () => {
+    const nextRoom = await api(`/api/sessions/${state.session.id}/rooms/${state.room.id}/exit`, { method: 'POST' });
+    state.room = nextRoom;
+    state.inspection = null;
+    state.timeLeft = state.session.timer_seconds;
+    await refreshAll();
+    showToast('The previous chamber sealed behind you.');
+  });
+}
+
+async function askEcho(question) {
+  await guarded('Asking the Cave Echo...', async () => {
+    const recall = await api(`/api/sessions/${state.session.id}/echo/ask`, {
+      method: 'POST',
+      body: JSON.stringify({ question })
+    });
+    addBubble(recall.answer, 'cave');
+    if (recall.final_line) {
+      state.ended = true;
+      state.running = false;
+      el.endingText.textContent = recall.final_line;
+      el.endingOverlay.hidden = false;
+    }
+    await refreshAll();
+  });
+}
+
+async function resetMemoryCycle() {
+  if (!state.session) return;
+  await guarded('The memory tide resets...', async () => {
+    state.session = await api(`/api/sessions/${state.session.id}/reset`, { method: 'POST' });
+    state.timeLeft = state.session.timer_seconds;
+    await refreshAll();
+    showToast('Reset complete. Committed memories persisted.');
+  });
+}
+
+function renderClueBox() {
+  const memories = state.graph.memories || [];
+  const nodes = state.graph.nodes || [];
+  const roomMemories = state.room ? memories.filter(memory => memory.room_id === state.room.id) : memories;
+  el.clueList.innerHTML = roomMemories.length
+    ? roomMemories.map(memory => `<li><strong>${escapeHtml(memory.title)}:</strong> ${escapeHtml(memory.text)}</li>`).join('')
+    : '<li class="empty">No memories committed in this chamber yet.</li>';
+  el.connectionList.innerHTML = memories.length
+    ? memories.map(memory => `<li><strong>${escapeHtml(memory.title)}:</strong> ${escapeHtml(memory.status)}</li>`).join('')
+    : '<li class="empty">The Cave Echo has not retained a memory yet.</li>';
+  el.fragmentCount.textContent = String(roomMemories.length);
+  el.knotCount.textContent = String(memories.length);
+  el.stateValue.textContent = state.ended ? 'Complete' : state.room ? state.room.title : 'Starting';
+  renderThreads(nodes, memories);
+}
+
+function renderThreads(nodes, memories) {
+  el.threadGrid.innerHTML = '';
+  const exit = state.room?.exits?.[0];
+  if (exit) {
+    const committedIds = new Set(memories.map(memory => memory.id));
+    const missing = exit.requires_memory_ids.filter(id => !committedIds.has(id));
+    const card = document.createElement('article');
+    card.className = 'thread-card';
+    if (!missing.length) card.classList.add('solved');
+    card.innerHTML = `
+      <h4>${escapeHtml(exit.label)}</h4>
+      <p>${missing.length ? 'The threshold still needs specific Echo-held memories.' : 'The required memories are committed. The route can open.'}</p>
+      <div class="thread-meta">${missing.length ? `Missing: ${missing.map(escapeHtml).join(', ')}` : 'Ready to cross'}</div>
+      <button class="stone-btn" type="button" ${missing.length ? 'disabled' : ''}>${missing.length ? 'Memory locked' : 'Cross threshold'}</button>
+    `;
+    card.querySelector('button').addEventListener('click', exitCurrentRoom);
+    el.threadGrid.appendChild(card);
   }
-}
 
-function getHotspot(id) {
-  return GAME.room.hotspots.find(h => h.id === id);
-}
+  if (state.room?.id === 'root-gate') {
+    const finalCard = document.createElement('article');
+    finalCard.className = 'thread-card';
+    finalCard.innerHTML = `
+      <h4>Final Recall</h4>
+      <p>When the Echo has enough trusted memory, ask it the question the cave has been avoiding.</p>
+      <div class="thread-meta">Ask: Who am I?</div>
+      <button class="stone-btn" type="button">Ask the Echo</button>
+    `;
+    finalCard.querySelector('button').addEventListener('click', () => {
+      el.voicePanel.classList.add('open');
+      el.voicePanel.setAttribute('aria-hidden', 'false');
+      el.chatInput.value = 'Who am I?';
+      el.chatInput.focus();
+    });
+    el.threadGrid.appendChild(finalCard);
+  }
 
-function getDiscoveredHotspots() {
-  return [...state.discovered].map(getHotspot).filter(Boolean);
+  nodes.slice(0, 4).forEach(node => {
+    const card = document.createElement('article');
+    card.className = 'thread-card solved';
+    card.innerHTML = `
+      <h4>${escapeHtml(node.label)}</h4>
+      <p>The Cave Echo graph is retaining this node through resets.</p>
+      <div class="thread-meta">${escapeHtml(node.type)} / ${escapeHtml(node.status)}</div>
+    `;
+    el.threadGrid.appendChild(card);
+  });
 }
 
 function updateProgress() {
-  el.progressValue.textContent = `${state.solvedThreads.size} / ${GAME.room.threads.length}`;
-  if (state.solvedThreads.has('way-out') && state.solvedThreads.has('buried-identity')) {
-    el.goalText.textContent = 'The passage is ready. Inspect the blue fissure again and open the route out.';
-  } else if (state.unlockedHotspots.has('kael-niche') && !state.discovered.has('kael-niche')) {
-    el.goalText.textContent = 'The hidden niche is exposed. Inspect the wall cavity and recover the preserved name.';
-  } else if (state.solvedThreads.size > 0) {
-    el.goalText.textContent = 'Weave more deductions. Short-term clues vanish, but solved Memory Knots survive the reset.';
-  } else {
-    el.goalText.textContent = GAME.room.goal;
+  const memories = state.graph.memories || [];
+  el.progressValue.textContent = String(memories.length);
+  el.goalText.textContent = goalText();
+}
+
+function goalText() {
+  if (!state.room) return 'Start a backend session to enter the cave.';
+  const exit = state.room.exits?.[0];
+  if (exit) {
+    const memoryIds = new Set((state.graph.memories || []).map(memory => memory.id));
+    const missing = exit.requires_memory_ids.filter(id => !memoryIds.has(id));
+    return missing.length ? `${getSkin().goal} Needed for exit: ${missing.join(', ')}.` : 'The threshold is ready. Open the Clue Box and cross.';
   }
+  return getSkin().goal;
 }
 
 function updateTimer() {
@@ -379,144 +376,25 @@ function updateTimer() {
   el.timerWrap.classList.toggle('danger', state.timeLeft <= 20);
 }
 
-function resetMemoryCycle() {
-  if (state.discovered.size) {
-    state.archive.push({
-      kind: 'reset',
-      title: 'Memory tide',
-      detail: 'The timer wiped your current clue fragments. Only solved Memory Knots remained etched.',
-      time: new Date().toLocaleTimeString()
-    });
-  }
-  state.discovered.clear();
-  state.timeLeft = GAME.duration;
-  renderScene();
-  renderClueBox();
-  updateProgress();
-  updateTimer();
-  el.narration.textContent = 'The cave exhales. Loose fragments wash away. The knots I solved remain, but everything else has to be learned again.';
-  showToast('Memory tide reset. Knots remain, fragments vanish.');
+function getSkin() {
+  return ROOM_SKIN[state.room?.id] || ROOM_SKIN['waking-chamber'];
 }
 
-function renderClueBox() {
-  const current = getDiscoveredHotspots().filter(h => h.type === 'clue');
-  el.clueList.innerHTML = current.length
-    ? current.map(h => `<li><strong>${h.label}:</strong> ${h.clue}</li>`).join('')
-    : '<li class="empty">No current fragments committed.</li>';
-
-  const solved = GAME.room.threads.filter(t => state.solvedThreads.has(t.id));
-  el.connectionList.innerHTML = solved.length
-    ? solved.map(t => `<li><strong>${t.title}:</strong> ${t.result}</li>`).join('')
-    : '<li class="empty">No Memory Knots etched yet.</li>';
-
-  el.fragmentCount.textContent = String(current.length);
-  el.knotCount.textContent = String(solved.length);
-  el.stateValue.textContent = state.ended ? 'Escaped' : state.solvedThreads.size ? 'Deducing' : 'Searching';
-
-  el.threadGrid.innerHTML = '';
-  GAME.room.threads.forEach(thread => {
-    const card = document.createElement('article');
-    card.className = 'thread-card';
-    if (state.solvedThreads.has(thread.id)) card.classList.add('solved');
-    const ready = thread.needs.every(id => state.discovered.has(id) || state.solvedThreads.has(id));
-    const missing = thread.needs
-      .filter(id => !(state.discovered.has(id) || state.solvedThreads.has(id)))
-      .map(id => getHotspot(id)?.label || id);
-    const tagList = thread.needs
-      .map(id => getHotspot(id)?.label || id)
-      .map(name => `<span class="tag">${name}</span>`).join('');
-
-    card.innerHTML = `
-      <h4>${thread.title}</h4>
-      <p>${thread.description}</p>
-      <div class="thread-tags">${tagList}</div>
-      <div class="thread-meta">${state.solvedThreads.has(thread.id)
-        ? `Solved — ${thread.result}`
-        : ready
-          ? `Ready to weave — ${thread.stateLabel || 'Creates a Memory Knot'}`
-          : `Missing: ${missing.join(', ')}`}</div>
-      <button class="stone-btn" ${(!ready || state.solvedThreads.has(thread.id)) ? 'disabled' : ''}>${state.solvedThreads.has(thread.id) ? 'Memory Knot etched' : 'Weave memory'}</button>
-    `;
-    const btn = card.querySelector('button');
-    if (ready && !state.solvedThreads.has(thread.id)) {
-      btn.addEventListener('click', () => solveThread(thread.id));
-    }
-    el.threadGrid.appendChild(card);
-  });
+function getHotspotVisual(hotspot, index) {
+  const skin = getSkin();
+  const fallback = DEFAULT_HOTSPOTS[index % DEFAULT_HOTSPOTS.length];
+  return skin.positions[hotspot?.id] || fallback;
 }
 
-function solveThread(threadId) {
-  const thread = GAME.room.threads.find(t => t.id === threadId);
-  if (!thread || state.solvedThreads.has(thread.id)) return;
-  const ready = thread.needs.every(id => state.discovered.has(id) || state.solvedThreads.has(id));
-  if (!ready) return;
-
-  state.solvedThreads.add(thread.id);
-  state.archive.push({
-    kind: 'thread',
-    title: thread.title,
-    detail: thread.result,
-    time: new Date().toLocaleTimeString()
-  });
-
-  if (thread.unlocksHotspot) {
-    state.unlockedHotspots.add(thread.unlocksHotspot);
-    if (thread.unlocksHotspot === 'kael-niche') {
-      el.narration.textContent = 'The pattern finally holds. Third mark. Third brick. There is a hidden cavity behind the wall.';
-      showToast('Memory Knot etched. Hidden niche revealed.');
-    } else if (thread.unlocksHotspot === 'exit-passage') {
-      el.narration.textContent = 'The blue seam is no rumor now. The wall can be forced into a passage.';
-      showToast('Escape route identified.');
-    }
-  } else {
-    el.narration.textContent = thread.result;
-    showToast('Memory Knot etched. This deduction will survive resets.');
+async function guarded(message, action) {
+  try {
+    showToast(message);
+    await action();
+  } catch (error) {
+    showToast(error.message || 'The backend request failed.');
+    el.narration.textContent = `Backend unavailable or rejected the request: ${error.message || error}`;
+    throw error;
   }
-
-  renderScene();
-  renderClueBox();
-  updateProgress();
-}
-
-function caveAnswer(question) {
-  const q = question.toLowerCase();
-  const have = id => state.discovered.has(id) || state.solvedThreads.has(id);
-
-  if (q.includes('what now') || q.includes('goal') || q.includes('help')) {
-    if (state.solvedThreads.has('way-out') && state.solvedThreads.has('buried-identity')) {
-      return 'You already know enough. Inspect the blue fissure again and force the route open.';
-    }
-    if (state.unlockedHotspots.has('kael-niche') && !state.discovered.has('kael-niche')) {
-      return 'The wall cavity is open. The answer waiting in it is a name.';
-    }
-    return 'Find fragments, then weave them. Scratches, cloth, bricks. Bowl, ash, shard. Draft, name, exit.';
-  }
-
-  if (q.includes('brick') || q.includes('wall')) {
-    return have('scratch-marks') && have('ward-cloth')
-      ? 'The room has repeated itself enough. Not the first disturbed brick. Not the last. The third.'
-      : 'The wall needs context. Look for anything in the room that counts, points, or repeats.';
-  }
-
-  if (q.includes('bowl') || q.includes('ritual') || q.includes('shard')) {
-    return have('ritual-bowl') && have('ash-ring')
-      ? 'The chamber did not destroy memory; it processed it. The bowl and the circle were machinery disguised as ritual.'
-      : 'The bowl is only one sentence. Find the ash at the center and the shard that still reflects.';
-  }
-
-  if (q.includes('name') || q.includes('kael') || q.includes('who am i')) {
-    return state.discovered.has('kael-niche') || state.solvedThreads.has('buried-identity')
-      ? 'KAEL. Keep the name. Say it in your head until the cave starts to hate how steady you sound.'
-      : 'A name is hidden where the wall was taught to count.';
-  }
-
-  if (q.includes('exit') || q.includes('escape') || q.includes('outside') || q.includes('blue')) {
-    return have('blue-fissure')
-      ? 'Cold light does not lie. But a route is only useful when you understand why it was hidden and whose memory it guarded.'
-      : 'Smell the air. The room already leaks the answer.';
-  }
-
-  return 'Ask me about the wall, the bowl, the name, or the way out. I do have standards for vague despair.';
 }
 
 function addBubble(text, who) {
@@ -545,9 +423,23 @@ function toggleMusic() {
   }
 }
 
-function restartPrototype() {
-  state.running = true;
-  resetRun({ full: true });
+async function restartPrototype() {
+  state.session = null;
+  state.room = null;
+  state.graph = { nodes: [], edges: [], memories: [] };
+  state.inspection = null;
+  state.ended = false;
+  el.endingOverlay.hidden = true;
+  await startGame();
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
 }
 
 el.startBtn.addEventListener('click', startGame);
@@ -559,7 +451,7 @@ el.cluesBtn.addEventListener('click', () => {
 el.closeClues.addEventListener('click', () => el.clueDialog.close());
 el.closeInspect.addEventListener('click', () => el.inspectDialog.close());
 el.rememberBtn.addEventListener('click', rememberSelected);
-el.actBtn.addEventListener('click', runAction);
+el.actBtn.addEventListener('click', exitCurrentRoom);
 el.voiceBtn.addEventListener('click', () => {
   el.voicePanel.classList.add('open');
   el.voicePanel.setAttribute('aria-hidden', 'false');
@@ -569,13 +461,13 @@ el.closeVoice.addEventListener('click', () => {
   el.voicePanel.classList.remove('open');
   el.voicePanel.setAttribute('aria-hidden', 'true');
 });
-el.chatForm.addEventListener('submit', e => {
-  e.preventDefault();
+el.chatForm.addEventListener('submit', event => {
+  event.preventDefault();
   const text = el.chatInput.value.trim();
   if (!text) return;
   addBubble(text, 'user');
   el.chatInput.value = '';
-  setTimeout(() => addBubble(caveAnswer(text), 'cave'), 380);
+  askEcho(text);
 });
 el.musicBtn.addEventListener('click', toggleMusic);
 el.sfxBtn.addEventListener('click', () => {
@@ -584,10 +476,10 @@ el.sfxBtn.addEventListener('click', () => {
 });
 el.restartBtn.addEventListener('click', restartPrototype);
 
-window.addEventListener('keydown', e => {
-  if (e.key.toLowerCase() === 'c') el.cluesBtn.click();
-  if (e.key.toLowerCase() === 'v') el.voiceBtn.click();
-  if (e.key.toLowerCase() === 'p') el.plotBtn.click();
+window.addEventListener('keydown', event => {
+  if (event.key.toLowerCase() === 'c') el.cluesBtn.click();
+  if (event.key.toLowerCase() === 'v') el.voiceBtn.click();
+  if (event.key.toLowerCase() === 'p') el.plotBtn.click();
 });
 
 state.tickHandle = setInterval(() => {
@@ -600,6 +492,7 @@ state.tickHandle = setInterval(() => {
   }
 }, 1000);
 
+renderRoom();
 renderScene();
 renderClueBox();
 updateProgress();

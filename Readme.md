@@ -1,18 +1,16 @@
 # MemGoat
 
-MemGoat is a local prototype with a FastAPI backend and a Vite/React frontend.
+MemGoat is a local prototype with a FastAPI backend and a static HTML/CSS/JS frontend.
 
 ## Prerequisites
 
 - Python 3.11 or newer
-- Node.js 20 or newer
-- npm
 - PowerShell, for the provided local verification script
 
 ## Project Structure
 
 - `backend/` - FastAPI app, content loader, SQLite persistence, and backend tests
-- `ui/` - React/Vite frontend
+- `ui/` - static frontend integrated with the backend API
 - `scripts/verify-local.ps1` - end-to-end local verification script
 - `reference/` - design, UX, and implementation notes
 
@@ -47,8 +45,7 @@ In a second terminal, from the repository root:
 
 ```powershell
 cd ui
-npm install
-npm run dev
+python -m http.server 5173 --bind 127.0.0.1
 ```
 
 Open the app at:
@@ -57,7 +54,7 @@ Open the app at:
 http://127.0.0.1:5173
 ```
 
-The Vite dev server proxies `/api` requests to `http://127.0.0.1:8000`.
+The static UI calls `http://127.0.0.1:8000` directly.
 
 ## Environment Variables
 
@@ -94,26 +91,19 @@ cd backend
 .\.venv\Scripts\python.exe -m pytest
 ```
 
-Run frontend tests:
+Check frontend syntax:
 
 ```powershell
 cd ui
-npm test
-```
-
-Build the frontend:
-
-```powershell
-cd ui
-npm run build
+node --check script.js
 ```
 
 ## Local Verification
 
-After installing both backend and frontend dependencies, run the full local smoke test from the repository root:
+After installing backend dependencies, run the local smoke test from the repository root:
 
 ```powershell
 .\scripts\verify-local.ps1
 ```
 
-The script starts the backend and frontend, drives the app through a browser flow, and writes artifacts to `output/playwright/`.
+The script starts the backend and static UI server, verifies the app shell loads, walks the backend room/memory flow, and writes `output/local-smoke/smoke-result.json`.

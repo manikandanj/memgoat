@@ -120,6 +120,11 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
   box-shadow: 0 0 0 1px rgba(216,168,91,.22), 0 10px 22px rgba(0,0,0,.48);
   background: linear-gradient(#3b3227, #19150f);
 }
+.stone-btn:disabled {
+  cursor: not-allowed;
+  opacity: .48;
+  transform: none;
+}
 .stone-btn.large { padding: 14px 20px; font-size: 18px; }
 .stone-btn.secondary { opacity: .92; }
 .stone-btn.iconish { min-width: 108px; }
@@ -413,6 +418,8 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 }
 .inspect-copy {
   padding: 28px 26px 24px;
+  max-height: min(720px, calc(100vh - 80px));
+  overflow: auto;
 }
 .eyebrow {
   margin: 0 0 8px;
@@ -450,6 +457,18 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
   border: 1px solid rgba(216,168,91,.2);
 }
 .inspect-actions { display: flex; gap: 12px; margin-top: 6px; }
+.memory-choices {
+  display: grid;
+  gap: 10px;
+  margin: 10px 0 16px;
+}
+.memory-choices .thread-card {
+  padding: 12px;
+  border-radius: 12px;
+}
+.memory-choices .thread-card h4 {
+  font-size: 18px;
+}
 
 .memory-summary {
   display: grid;
