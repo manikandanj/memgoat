@@ -1,13 +1,89 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <title>MemGoat</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Goat of the Witch-Cave</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="game-shell">
+    <section class="viewport" id="viewport">
+      <div class="cave-bg"></div>
+      <div class="mist mist-a"></div>
+      <div class="mist mist-b"></div>
+
+      <header class="hud top-hud">
+        <button class="stone-btn" id="cluesBtn">Clue Box</button>
+        <div class="timer-wrap">
+          <span class="timer-label">Memory tide</span>
+          <span class="timer" id="timer">02:00</span>
+        </div>
+        <button class="stone-btn cave-voice-btn" id="voiceBtn">Cave Voice</button>
+      </header>
+
+      <button class="look-arrow look-left" id="leftBtn" aria-label="Look left">
+        <span>←</span>
+      </button>
+      <button class="look-arrow look-right" id="rightBtn" aria-label="Look right">
+        <span>→</span>
+      </button>
+
+      <div class="room-title" id="roomTitle">The Brine Cell</div>
+      <div class="room-subtitle" id="roomSubtitle">A witch's first cage. The air tastes like rust and old rain.</div>
+
+      <div class="goat" title="You, unfortunately. Proud horns. Questionable knees.">
+        <div class="horn horn-left"></div>
+        <div class="horn horn-right"></div>
+        <div class="goat-head"></div>
+        <div class="goat-beard"></div>
+      </div>
+
+      <div class="scene-items" id="sceneItems"></div>
+
+      <div class="textbox" id="textbox">
+        <div class="speaker">Goat mind</div>
+        <p id="narration">My hooves remember the floor, but my head keeps getting swept clean. Two minutes. The cave breathes, and then it steals.</p>
+      </div>
+    </section>
+  </main>
+
+  <dialog class="panel clue-panel" id="clueDialog">
+    <div class="panel-top">
+      <h2>Clue Box</h2>
+      <button class="close-btn" id="closeClues">×</button>
+    </div>
+    <p class="panel-note">When the timer resets, this slate is wiped. The cave is petty like that.</p>
+    <div class="split-grid">
+      <section>
+        <h3>Clues found</h3>
+        <ul class="clue-list" id="clueList"></ul>
+      </section>
+      <section>
+        <h3>Connections</h3>
+        <ul class="clue-list" id="connectionList"></ul>
+      </section>
+    </div>
+  </dialog>
+
+  <aside class="voice-panel" id="voicePanel" aria-hidden="true">
+    <div class="panel-top">
+      <div>
+        <h2>Cave Voice</h2>
+        <p>The cave remembers, but speaks sideways.</p>
+      </div>
+      <button class="close-btn" id="closeVoice">×</button>
+    </div>
+    <div class="chat-log" id="chatLog">
+      <div class="bubble cave">Ask what the room forgot. I will answer in echoes, not maps.</div>
+    </div>
+    <form class="chat-form" id="chatForm">
+      <input id="chatInput" type="text" autocomplete="off" placeholder="Ask the cave what you knew before..." />
+      <button type="submit">Ask</button>
+    </form>
+  </aside>
+
+  <div class="toast" id="toast"></div>
+  <script src="script.js"></script>
+</body>
 </html>
