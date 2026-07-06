@@ -18,6 +18,13 @@
 
 MemGoat is an atmospheric browser game about memory, identity, and what happens when an AI loses the thread. It is our entry for WeMakeDevs and Cognee's hackathon, [The Hangover Part AI: Where's My Context?](https://www.wemakedevs.org/hackathons/cognee).
 
+Built by **Cache Collectors**:
+
+- [Manikandan Jeyarajan](https://github.com/manikandanj) (`manikandanj`)
+- [Koushik Sivakumar](https://github.com/KoushikSivakumar) (`KoushikSivakumar`)
+- [Kiranshree VL](https://github.com/kiranshreevl-ux) (`kiranshreevl-ux`)
+- [Jina Manoharan](https://github.com/JinaManoharan) (`JinaManoharan`)
+
 The experience is intentionally simple to understand: you wake up as a goat in a cave with no memory of who you are. Every two minutes, your short-term memory collapses. The only thing that persists is the Cave Echo, a living memory graph powered by Cognee.
 
 ## Demo
