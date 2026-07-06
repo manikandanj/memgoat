@@ -6,8 +6,16 @@
   <title>MemGoat - Cave Echo Prototype</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
-  <div class="intro-overlay" id="introOverlay">
+<body class="narration-active">
+  <div class="narration-overlay" id="narrationOverlay">
+    <img class="narration-picture" src="assets/narration_picture.png" alt="A dark cave memory" />
+    <button class="stone-btn large narration-start" id="narrationStartBtn" type="button">Begin</button>
+    <audio id="narrationAudio" preload="auto">
+      <source src="assets/audio/narration.mp3" type="audio/mpeg" />
+    </audio>
+  </div>
+
+  <div class="intro-overlay current-page-pending" id="introOverlay">
     <div class="intro-card">
       <p class="eyebrow">Backend-integrated prototype</p>
       <h1>MemGoat</h1>
@@ -35,7 +43,7 @@
         </div>
       </div>
       <div class="intro-actions">
-        <button class="stone-btn large" id="startBtn">Open backend session</button>
+        <button class="stone-btn large" id="startBtn">Enter Cave</button>
       </div>
     </div>
   </div>
@@ -74,7 +82,7 @@
 
       <div class="goal-strip">
         <div class="goal-title">Current goal</div>
-        <p id="goalText">Start a backend session to enter the cave.</p>
+        <p id="goalText">Enter the cave to begin.</p>
       </div>
 
       <div class="scene-items" id="sceneItems"></div>
@@ -185,7 +193,7 @@
 
   <div class="toast" id="toast"></div>
   <audio id="bgMusic" loop preload="none">
-    <source src="assets/audio/ambient-cave.mp3" type="audio/mpeg" />
+    <source src="assets/audio/cave_bg_sound.wav" type="audio/wav" />
   </audio>
   <script src="script.js"></script>
 </body>

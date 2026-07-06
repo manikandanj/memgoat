@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-labelledby="title desc">
+  <title id="title">MemGoat Cognee Architecture</title>
+  <desc id="desc">Architecture diagram showing the player, short-lived LLM goat session, FastAPI backend, and Cognee as the persistent cave memory graph.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#13100e"/>
+      <stop offset="0.42" stop-color="#29211b"/>
+      <stop offset="1" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="cave" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f59e0b"/>
+      <stop offset="0.47" stop-color="#d97706"/>
+      <stop offset="1" stop-color="#7c2d12"/>
+    </linearGradient>
+    <linearGradient id="llm" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e0f2fe"/>
+      <stop offset="1" stop-color="#7dd3fc"/>
+    </linearGradient>
+    <linearGradient id="api" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#dcfce7"/>
+      <stop offset="1" stop-color="#86efac"/>
+    </linearGradient>
+    <linearGradient id="store" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fef3c7"/>
+      <stop offset="1" stop-color="#fbbf24"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#000000" flood-opacity="0.32"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="14" markerHeight="14" orient="auto-start-reverse">
+      <path d="M1 1 L11 6 L1 11 Z" fill="#f8fafc"/>
+    </marker>
+    <marker id="amberArrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="14" markerHeight="14" orient="auto-start-reverse">
+      <path d="M1 1 L11 6 L1 11 Z" fill="#f59e0b"/>
+    </marker>
+    <style>
+      .title { font: 800 64px Arial, sans-serif; fill: #fff7ed; letter-spacing: 0; }
+      .subtitle { font: 400 28px Arial, sans-serif; fill: #fed7aa; letter-spacing: 0; }
+      .label { font: 800 31px Arial, sans-serif; fill: #111827; letter-spacing: 0; }
+      .small { font: 500 23px Arial, sans-serif; fill: #1f2937; letter-spacing: 0; }
+      .tiny { font: 600 19px Arial, sans-serif; fill: #4b5563; letter-spacing: 0; }
+      .darkLabel { font: 800 34px Arial, sans-serif; fill: #fff7ed; letter-spacing: 0; }
+      .darkSmall { font: 500 24px Arial, sans-serif; fill: #fde68a; letter-spacing: 0; }
+      .note { font: 700 25px Arial, sans-serif; fill: #f8fafc; letter-spacing: 0; }
+      .flow { fill: none; stroke: #f8fafc; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrow); }
+      .flowAmber { fill: none; stroke: #f59e0b; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#amberArrow); }
+      .dash { stroke-dasharray: 18 15; }
+      .card { filter: url(#shadow); }
+    </style>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#bg)"/>
+  <path d="M0 830 C210 770 365 850 520 800 C720 735 840 800 1030 735 C1230 665 1390 725 1560 675 C1700 635 1810 630 1920 660 L1920 1080 L0 1080 Z" fill="#0b0f14" opacity="0.72"/>
+  <path d="M0 890 C265 845 440 920 650 875 C860 830 1050 880 1210 830 C1410 770 1610 830 1920 780 L1920 1080 L0 1080 Z" fill="#1c1917" opacity="0.88"/>
+
+  <text x="96" y="105" class="title">MemGoat memory architecture</text>
+  <text x="100" y="153" class="subtitle">The Goal represents an LLM. The cave represents Cognee: persistent graph memory that survives resets.</text>
+
+  <g class="card">
+    <rect x="92" y="270" width="300" height="170" rx="28" fill="#fff7ed"/>
+    <circle cx="160" cy="345" r="38" fill="#fb923c"/>
+    <path d="M145 340 C137 317 153 305 165 326 C177 305 193 317 185 340 C180 359 151 359 145 340 Z" fill="#111827"/>
+    <text x="225" y="334" class="label" text-anchor="middle">Player</text>
+    <text x="225" y="372" class="small" text-anchor="middle">examines artifacts</text>
+    <text x="225" y="404" class="small" text-anchor="middle">asks Cave Echo</text>
+  </g>
+
+  <g class="card">
+    <rect x="520" y="248" width="350" height="215" rx="30" fill="url(#llm)"/>
+    <text x="695" y="314" class="label" text-anchor="middle">Goal / Goat</text>
+    <text x="695" y="354" class="small" text-anchor="middle">LLM session context</text>
+    <line x1="580" y1="381" x2="810" y2="381" stroke="#0f172a" stroke-width="3" opacity="0.2"/>
+    <text x="695" y="419" class="tiny" text-anchor="middle">Narrates current room</text>
+    <text x="695" y="447" class="tiny" text-anchor="middle">Forgets when timer resets</text>
+  </g>
+
+  <g class="card">
+    <rect x="1000" y="245" width="365" height="220" rx="30" fill="url(#api)"/>
+    <text x="1182" y="309" class="label" text-anchor="middle">FastAPI backend</text>
+    <text x="1182" y="350" class="small" text-anchor="middle">SessionService + MemoryService</text>
+    <text x="1182" y="405" class="tiny" text-anchor="middle">validates commits, resets context,</text>
+    <text x="1182" y="433" class="tiny" text-anchor="middle">normalizes Cognee recall paths</text>
+  </g>
+
+  <g class="card">
+    <path d="M1538 224 C1640 150 1790 192 1830 322 C1878 478 1766 606 1602 590 C1440 574 1342 453 1398 332 C1428 268 1482 258 1538 224 Z" fill="url(#cave)"/>
+    <path d="M1484 376 C1522 290 1660 268 1718 349 C1780 435 1719 525 1605 518 C1498 511 1440 465 1484 376 Z" fill="#1c1917" opacity="0.88"/>
+    <text x="1612" y="320" class="darkLabel" text-anchor="middle">Cave = Cognee</text>
+    <text x="1612" y="365" class="darkSmall" text-anchor="middle">persistent graph memory</text>
+    <text x="1612" y="430" class="darkSmall" text-anchor="middle">entities, relationships,</text>
+    <text x="1612" y="463" class="darkSmall" text-anchor="middle">sources, confidence</text>
+  </g>
+
+  <g class="card">
+    <rect x="1010" y="645" width="360" height="190" rx="28" fill="url(#store)"/>
+    <text x="1190" y="704" class="label" text-anchor="middle">SQLite + content</text>
+    <text x="1190" y="745" class="small" text-anchor="middle">session state and authored</text>
+    <text x="1190" y="779" class="small" text-anchor="middle">puzzle facts for the UI</text>
+  </g>
+
+  <g class="card">
+    <rect x="505" y="650" width="390" height="205" rx="28" fill="#f8fafc"/>
+    <text x="700" y="711" class="label" text-anchor="middle">Reset moment</text>
+    <text x="700" y="755" class="small" text-anchor="middle">new LLM call starts blank</text>
+    <text x="700" y="790" class="small" text-anchor="middle">Cognee graph remains intact</text>
+    <text x="700" y="825" class="tiny" text-anchor="middle">"What do I know?" rehydrates context</text>
+  </g>
+
+  <path class="flow" d="M392 355 C448 355 464 355 520 355"/>
+  <text x="456" y="330" class="note" text-anchor="middle">play</text>
+
+  <path class="flow" d="M870 355 C930 355 940 355 1000 355"/>
+  <text x="935" y="330" class="note" text-anchor="middle">API calls</text>
+
+  <path class="flowAmber" d="M1365 352 C1410 352 1428 352 1474 352"/>
+  <text x="1420" y="323" class="note" text-anchor="middle">remember / recall</text>
+
+  <path class="flow" d="M1180 465 C1180 540 1182 575 1186 645"/>
+  <text x="1262" y="563" class="note">audit state</text>
+
+  <path class="flowAmber dash" d="M1488 540 C1335 610 1158 590 905 715"/>
+  <text x="1260" y="620" class="note" text-anchor="middle">recall restores story</text>
+
+  <path class="flow dash" d="M685 650 C650 590 650 530 678 464"/>
+  <text x="572" y="565" class="note" text-anchor="middle">timer reset</text>
+
+  <g transform="translate(116,910)">
+    <rect x="0" y="0" width="1688" height="82" rx="20" fill="#020617" opacity="0.68"/>
+    <text x="42" y="53" class="note">Demo proof: the Goal/Goat LLM loses short-term context repeatedly, while Cognee keeps the cave's knowledge graph and answers from committed memories.</text>
+  </g>
+</svg>

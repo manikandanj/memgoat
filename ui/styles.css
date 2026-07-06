@@ -612,6 +612,58 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
   background: rgba(0,0,0,.78);
   backdrop-filter: blur(7px);
 }
+.narration-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 24px;
+  background: #000;
+  opacity: 1;
+  transition: opacity 1.8s ease, visibility 1.8s ease;
+}
+.narration-overlay.done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.narration-picture {
+  width: min(100vw, 1360px);
+  height: min(100vh, 820px);
+  object-fit: cover;
+  opacity: 0;
+  filter: brightness(.78) saturate(.86);
+  transform: scale(1.035);
+  transition: opacity 4s ease, transform 12s ease;
+}
+.narration-overlay.playing .narration-picture {
+  opacity: 1;
+  transform: scale(1);
+}
+.narration-start {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(28px, 8vh, 72px);
+  transform: translateX(-50%);
+  z-index: 2;
+  opacity: 1;
+  transition: opacity .8s ease, transform .8s ease;
+}
+.narration-overlay.playing .narration-start {
+  opacity: 0;
+  transform: translateX(-50%) translateY(10px);
+  pointer-events: none;
+}
+.narration-active .current-page-pending {
+  opacity: 0;
+  pointer-events: none;
+}
+.intro-overlay {
+  opacity: 1;
+  transition: opacity 1.8s ease;
+}
 .intro-card,
 .ending-card {
   width: min(960px, calc(100vw - 40px));

@@ -54,6 +54,10 @@ const el = {
   timer: document.getElementById('timer'),
   timerWrap: document.getElementById('timerWrap'),
   progressValue: document.getElementById('progressValue'),
+  narrationOverlay: document.getElementById('narrationOverlay'),
+  narrationPicture: document.querySelector('.narration-picture'),
+  narrationStartBtn: document.getElementById('narrationStartBtn'),
+  narrationAudio: document.getElementById('narrationAudio'),
   introOverlay: document.getElementById('introOverlay'),
   startBtn: document.getElementById('startBtn'),
   plotBtn: document.getElementById('plotBtn'),
@@ -105,6 +109,7 @@ const state = {
   ended: false,
   musicOn: false,
   sfxOn: true,
+  narrationComplete: false,
   tickHandle: null
 };
 
@@ -133,6 +138,28 @@ async function startGame() {
     await refreshAll();
     showToast('Session opened. The backend is carrying memory state.');
   });
+}
+
+async function beginNarration() {
+  if (state.narrationComplete || !el.narrationOverlay) return;
+  el.narrationOverlay.classList.add('playing');
+  try {
+    await el.narrationAudio.play();
+  } catch (error) {
+    el.narrationOverlay.classList.remove('playing');
+    el.narrationStartBtn.textContent = 'Begin';
+  }
+}
+
+function finishNarration() {
+  if (state.narrationComplete) return;
+  state.narrationComplete = true;
+  document.body.classList.remove('narration-active');
+  el.introOverlay.classList.remove('current-page-pending');
+  el.narrationOverlay.classList.add('done');
+  setTimeout(() => {
+    el.narrationOverlay.hidden = true;
+  }, 1900);
 }
 
 async function refreshAll() {
@@ -358,7 +385,7 @@ function updateProgress() {
 }
 
 function goalText() {
-  if (!state.room) return 'Start a backend session to enter the cave.';
+  if (!state.room) return 'Enter the cave to begin.';
   const exit = state.room.exits?.[0];
   if (exit) {
     const memoryIds = new Set((state.graph.memories || []).map(memory => memory.id));
@@ -417,7 +444,7 @@ function toggleMusic() {
   state.musicOn = !state.musicOn;
   el.musicBtn.textContent = `Music: ${state.musicOn ? 'On' : 'Off'}`;
   if (state.musicOn) {
-    el.bgMusic.play().catch(() => showToast('Add assets/audio/ambient-cave.mp3 to enable music.'));
+    el.bgMusic.play().catch(() => showToast('Unable to play assets/audio/cave_bg_sound.wav.'));
   } else {
     el.bgMusic.pause();
   }
@@ -443,6 +470,9 @@ function escapeHtml(value) {
 }
 
 el.startBtn.addEventListener('click', startGame);
+el.narrationStartBtn.addEventListener('click', beginNarration);
+el.narrationAudio.addEventListener('ended', finishNarration);
+el.narrationAudio.addEventListener('error', finishNarration);
 el.plotBtn.addEventListener('click', () => el.introOverlay.classList.remove('hidden'));
 el.cluesBtn.addEventListener('click', () => {
   renderClueBox();
@@ -497,3 +527,6 @@ renderScene();
 renderClueBox();
 updateProgress();
 updateTimer();
+window.addEventListener('load', () => {
+  setTimeout(beginNarration, 700);
+});
