@@ -1,4 +1,7 @@
 const API_BASE = window.MEMGOAT_API_BASE || 'http://127.0.0.1:8000';
+const TITLE_HOLD_MS = 3500;
+const NARRATION_CUES = [0, 12, 20, 45];
+const BG_MUSIC_GAIN = 1.5;
 
 const ROOM_SKIN = {
   'waking-chamber': {
@@ -55,8 +58,10 @@ const el = {
   timerWrap: document.getElementById('timerWrap'),
   progressValue: document.getElementById('progressValue'),
   narrationOverlay: document.getElementById('narrationOverlay'),
-  narrationPicture: document.querySelector('.narration-picture'),
+  introTitleImage: document.querySelector('.intro-title-image'),
+  narrationPictures: Array.from(document.querySelectorAll('.narration-picture')),
   narrationStartBtn: document.getElementById('narrationStartBtn'),
+  skipIntroBtn: document.getElementById('skipIntroBtn'),
   narrationAudio: document.getElementById('narrationAudio'),
   introOverlay: document.getElementById('introOverlay'),
   startBtn: document.getElementById('startBtn'),
@@ -90,11 +95,11 @@ const el = {
   chatInput: document.getElementById('chatInput'),
   toast: document.getElementById('toast'),
   musicBtn: document.getElementById('musicBtn'),
-  sfxBtn: document.getElementById('sfxBtn'),
   endingOverlay: document.getElementById('endingOverlay'),
   endingText: document.getElementById('endingText'),
   restartBtn: document.getElementById('restartBtn'),
   bgMusic: document.getElementById('bgMusic'),
+  swooshSound: document.getElementById('swooshSound'),
   caveBg: document.querySelector('.cave-bg')
 };
 
@@ -107,9 +112,10 @@ const state = {
   timeLeft: 120,
   running: false,
   ended: false,
-  musicOn: false,
-  sfxOn: true,
+  musicOn: true,
+  introStarted: false,
   narrationComplete: false,
+  narrationTimers: [],
   tickHandle: null
 };
 
@@ -137,29 +143,79 @@ async function startGame() {
     state.ended = false;
     await refreshAll();
     showToast('Session opened. The backend is carrying memory state.');
+    startBackgroundSound();
   });
 }
 
 async function beginNarration() {
+  if (state.narrationComplete || state.introStarted || !el.narrationOverlay) return;
+  state.introStarted = true;
+  el.narrationOverlay.classList.add('title-hold');
+  el.narrationStartBtn.disabled = true;
+  window.setTimeout(startNarrationAudio, TITLE_HOLD_MS);
+}
+
+async function startNarrationAudio() {
   if (state.narrationComplete || !el.narrationOverlay) return;
+  el.narrationOverlay.classList.remove('title-stage', 'title-hold');
   el.narrationOverlay.classList.add('playing');
+  showNarrationPicture(0);
+  scheduleNarrationPictures();
   try {
     await el.narrationAudio.play();
   } catch (error) {
     el.narrationOverlay.classList.remove('playing');
+    el.narrationOverlay.classList.add('title-stage');
+    el.narrationStartBtn.disabled = false;
     el.narrationStartBtn.textContent = 'Begin';
+    clearNarrationTimers();
+    state.introStarted = false;
   }
 }
 
-function finishNarration() {
+async function finishNarration(options = {}) {
   if (state.narrationComplete) return;
   state.narrationComplete = true;
+  clearNarrationTimers();
+  el.narrationAudio.pause();
+  el.narrationAudio.currentTime = 0;
+  if (!options.skip) {
+    showNarrationPicture(3);
+    el.narrationOverlay.classList.add('dramatic-entry');
+    await delay(2200);
+  }
   document.body.classList.remove('narration-active');
+  el.introOverlay.classList.add('hidden');
+  await startGame().catch(() => {});
   el.introOverlay.classList.remove('current-page-pending');
   el.narrationOverlay.classList.add('done');
   setTimeout(() => {
     el.narrationOverlay.hidden = true;
   }, 1900);
+}
+
+function skipIntro() {
+  finishNarration({ skip: true });
+}
+
+function scheduleNarrationPictures() {
+  clearNarrationTimers();
+  NARRATION_CUES.slice(1).forEach((cueSeconds, index) => {
+    state.narrationTimers.push(window.setTimeout(() => {
+      showNarrationPicture(index + 1);
+    }, cueSeconds * 1000));
+  });
+}
+
+function clearNarrationTimers() {
+  state.narrationTimers.forEach(timer => window.clearTimeout(timer));
+  state.narrationTimers = [];
+}
+
+function showNarrationPicture(index) {
+  el.narrationPictures.forEach((picture, pictureIndex) => {
+    picture.classList.toggle('active', pictureIndex === index);
+  });
 }
 
 async function refreshAll() {
@@ -217,6 +273,7 @@ function renderScene() {
 }
 
 async function openInspect(id) {
+  playSwoosh();
   await guarded('Inspecting object...', async () => {
     state.selectedHotspot = id;
     state.inspection = await api(`/api/sessions/${state.session.id}/objects/${id}/inspect`, { method: 'POST' });
@@ -433,6 +490,9 @@ function addBubble(text, who) {
 }
 
 let toastTimeout;
+let bgMusicAudioContext = null;
+let bgMusicGainNode = null;
+
 function showToast(message) {
   clearTimeout(toastTimeout);
   el.toast.textContent = message;
@@ -440,14 +500,55 @@ function showToast(message) {
   toastTimeout = setTimeout(() => el.toast.classList.remove('show'), 2300);
 }
 
+function configureBackgroundSoundGain() {
+  const AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextConstructor || bgMusicGainNode) return bgMusicAudioContext;
+
+  bgMusicAudioContext = new AudioContextConstructor();
+  const source = bgMusicAudioContext.createMediaElementSource(el.bgMusic);
+  bgMusicGainNode = bgMusicAudioContext.createGain();
+  bgMusicGainNode.gain.value = BG_MUSIC_GAIN;
+  source.connect(bgMusicGainNode).connect(bgMusicAudioContext.destination);
+
+  return bgMusicAudioContext;
+}
+
 function toggleMusic() {
   state.musicOn = !state.musicOn;
-  el.musicBtn.textContent = `Music: ${state.musicOn ? 'On' : 'Off'}`;
+  updateMusicButton();
   if (state.musicOn) {
-    el.bgMusic.play().catch(() => showToast('Unable to play assets/audio/cave_bg_sound.wav.'));
+    startBackgroundSound();
   } else {
     el.bgMusic.pause();
   }
+}
+
+function startBackgroundSound() {
+  if (!state.musicOn || !el.bgMusic) return;
+  el.bgMusic.volume = 1.0;
+  const audioContext = configureBackgroundSoundGain();
+  updateMusicButton();
+  const resumeAudio = audioContext && audioContext.state === 'suspended'
+    ? audioContext.resume()
+    : Promise.resolve();
+
+  resumeAudio
+    .then(() => el.bgMusic.play())
+    .catch(() => showToast('Unable to play assets/audio/cave_bg_sound.mp3.'));
+}
+
+function updateMusicButton() {
+  el.musicBtn.textContent = `Music: ${state.musicOn ? 'On' : 'Off'}`;
+}
+
+function playSwoosh() {
+  if (!el.swooshSound) return;
+  el.swooshSound.currentTime = 0;
+  el.swooshSound.play().catch(() => {});
+}
+
+function delay(ms) {
+  return new Promise(resolve => window.setTimeout(resolve, ms));
 }
 
 async function restartPrototype() {
@@ -471,6 +572,7 @@ function escapeHtml(value) {
 
 el.startBtn.addEventListener('click', startGame);
 el.narrationStartBtn.addEventListener('click', beginNarration);
+el.skipIntroBtn.addEventListener('click', skipIntro);
 el.narrationAudio.addEventListener('ended', finishNarration);
 el.narrationAudio.addEventListener('error', finishNarration);
 el.plotBtn.addEventListener('click', () => el.introOverlay.classList.remove('hidden'));
@@ -500,10 +602,6 @@ el.chatForm.addEventListener('submit', event => {
   askEcho(text);
 });
 el.musicBtn.addEventListener('click', toggleMusic);
-el.sfxBtn.addEventListener('click', () => {
-  state.sfxOn = !state.sfxOn;
-  el.sfxBtn.textContent = `SFX: ${state.sfxOn ? 'On' : 'Off'}`;
-});
 el.restartBtn.addEventListener('click', restartPrototype);
 
 window.addEventListener('keydown', event => {
@@ -527,6 +625,4 @@ renderScene();
 renderClueBox();
 updateProgress();
 updateTimer();
-window.addEventListener('load', () => {
-  setTimeout(beginNarration, 700);
-});
+updateMusicButton();

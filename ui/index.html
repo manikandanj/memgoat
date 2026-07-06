@@ -7,15 +7,23 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body class="narration-active">
-  <div class="narration-overlay" id="narrationOverlay">
-    <img class="narration-picture" src="assets/narration_picture.png" alt="A dark cave memory" />
+  <div class="narration-overlay title-stage" id="narrationOverlay">
+    <img class="intro-title-image active" src="assets/title.png" alt="MemGoat" />
+    <div class="narration-frame-stack" aria-hidden="true">
+      <img class="narration-picture active" src="assets/narration_picture_1.png" alt="" />
+      <img class="narration-picture" src="assets/narration_picture_2.png" alt="" />
+      <img class="narration-picture" src="assets/narration_picture_3.png" alt="" />
+      <img class="narration-picture" src="assets/narration_picture_4.png" alt="" />
+    </div>
+    <div class="intro-bloom" aria-hidden="true"></div>
     <button class="stone-btn large narration-start" id="narrationStartBtn" type="button">Begin</button>
+    <button class="stone-btn secondary skip-intro" id="skipIntroBtn" type="button">Skip intro</button>
     <audio id="narrationAudio" preload="auto">
       <source src="assets/audio/narration.mp3" type="audio/mpeg" />
     </audio>
   </div>
 
-  <div class="intro-overlay current-page-pending" id="introOverlay">
+  <div class="intro-overlay hidden current-page-pending" id="introOverlay">
     <div class="intro-card">
       <p class="eyebrow">Backend-integrated prototype</p>
       <h1>MemGoat</h1>
@@ -72,8 +80,7 @@
           </div>
         </div>
         <div class="right-tools">
-          <button class="stone-btn iconish" id="musicBtn" title="Audio placeholder toggle">Music: Off</button>
-          <button class="stone-btn iconish" id="sfxBtn" title="SFX placeholder toggle">SFX: On</button>
+          <button class="stone-btn iconish" id="musicBtn" title="Toggle cave background sound">Music: On</button>
         </div>
       </header>
 
@@ -88,7 +95,6 @@
       <div class="scene-items" id="sceneItems"></div>
 
       <div class="textbox" id="textbox">
-        <div class="speaker">First-person narration</div>
         <p id="narration">Cold stone. A dead lantern. The cave is already taking pieces of me.</p>
       </div>
     </section>
@@ -193,7 +199,10 @@
 
   <div class="toast" id="toast"></div>
   <audio id="bgMusic" loop preload="none">
-    <source src="assets/audio/cave_bg_sound.wav" type="audio/wav" />
+    <source src="assets/audio/cave_bg_sound.mp3" type="audio/mpeg" />
+  </audio>
+  <audio id="swooshSound" preload="auto">
+    <source src="assets/audio/swoosh.mp3" type="audio/mpeg" />
   </audio>
   <script src="script.js"></script>
 </body>
