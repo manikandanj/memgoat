@@ -38,7 +38,7 @@
   <path d="M0 862 C262 822 438 890 665 832 C922 766 1092 840 1330 782 C1544 730 1712 748 1920 708 L1920 1080 L0 1080 Z" fill="#1c1917" opacity="0.8"/>
 
   <text x="90" y="100" class="title">Cognee-centered technical details</text>
-  <text x="94" y="148" class="subtitle">For the demo video: Goal = LLM session. Cave = Cognee memory graph. The LLM forgets; Cognee does not.</text>
+  <text x="94" y="148" class="subtitle">For the demo video: Goat = LLM session. Cave = Cognee memory graph. The LLM forgets; Cognee does not.</text>
 
   <g class="panel" transform="translate(90,220)">
     <rect width="520" height="320" rx="26" fill="url(#panel)"/>
@@ -98,7 +98,7 @@
     <rect width="540" height="300" rx="26" fill="#f8fafc"/>
     <text x="40" y="65" class="panelTitle">Hackathon proof point</text>
     <text x="40" y="116" class="bodyStrong">2-minute reset creates a fresh LLM</text>
-    <text x="40" y="154" class="body">the Goal/Goat loses context</text>
+    <text x="40" y="154" class="body">the Goat/LLM loses context</text>
     <text x="40" y="202" class="bodyStrong">Cognee keeps the cave graph</text>
     <text x="40" y="240" class="body">recall rehydrates the next session</text>
   </g>

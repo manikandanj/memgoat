@@ -54,7 +54,7 @@
   <path d="M0 890 C265 845 440 920 650 875 C860 830 1050 880 1210 830 C1410 770 1610 830 1920 780 L1920 1080 L0 1080 Z" fill="#1c1917" opacity="0.88"/>
 
   <text x="96" y="105" class="title">MemGoat memory architecture</text>
-  <text x="100" y="153" class="subtitle">The Goal represents an LLM. The cave represents Cognee: persistent graph memory that survives resets.</text>
+  <text x="100" y="153" class="subtitle">The Goat represents an LLM. The cave represents Cognee: persistent graph memory that survives resets.</text>
 
   <g class="card">
     <rect x="92" y="270" width="300" height="170" rx="28" fill="#fff7ed"/>
@@ -67,7 +67,7 @@
 
   <g class="card">
     <rect x="520" y="248" width="350" height="215" rx="30" fill="url(#llm)"/>
-    <text x="695" y="314" class="label" text-anchor="middle">Goal / Goat</text>
+    <text x="695" y="314" class="label" text-anchor="middle">Goat / LLM</text>
     <text x="695" y="354" class="small" text-anchor="middle">LLM session context</text>
     <line x1="580" y1="381" x2="810" y2="381" stroke="#0f172a" stroke-width="3" opacity="0.2"/>
     <text x="695" y="419" class="tiny" text-anchor="middle">Narrates current room</text>
@@ -126,6 +126,6 @@
 
   <g transform="translate(116,910)">
     <rect x="0" y="0" width="1688" height="82" rx="20" fill="#020617" opacity="0.68"/>
-    <text x="42" y="53" class="note">Demo proof: the Goal/Goat LLM loses short-term context repeatedly, while Cognee keeps the cave's knowledge graph and answers from committed memories.</text>
+    <text x="42" y="53" class="note">Demo proof: the Goat/LLM loses short-term context repeatedly, while Cognee keeps the cave's knowledge graph and answers from committed memories.</text>
   </g>
 </svg>
